@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <title>핫플레이스 수정 - EnjoyTrip</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
-    <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=${initParam.kakaoJavascriptKey}&libraries=services"></script>
+    <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=${kakaoJavascriptKey}&libraries=services"></script>
     <style>
         #map { width:100%; height:350px; border:1px solid #ccc; border-radius:4px; }
         .form-table th { width:120px; text-align:right; padding:8px 12px; }

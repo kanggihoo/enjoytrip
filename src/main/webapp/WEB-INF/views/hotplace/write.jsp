@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <title>핫플레이스 등록 - EnjoyTrip</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
-    <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=${initParam.kakaoJavascriptKey}&libraries=services"></script>
+    <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=${kakaoJavascriptKey}&libraries=services"></script>
     <style>
         #map { width:100%; height:400px; border:1px solid #ccc; border-radius:4px; }
         .preview-img { max-width:200px; max-height:150px; margin-top:8px; display:none; }

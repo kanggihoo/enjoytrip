@@ -141,7 +141,7 @@
 </div>
 
 <script type="text/javascript"
-    src="//dapi.kakao.com/v2/maps/sdk.js?appkey=${initParam.kakaoJavascriptKey}&libraries=services">
+    src="//dapi.kakao.com/v2/maps/sdk.js?appkey=${kakaoJavascriptKey}&libraries=services">
 </script>
 <script>
 const CONTEXT = "${pageContext.request.contextPath}";

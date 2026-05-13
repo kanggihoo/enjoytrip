@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <title>${plan.title} - EnjoyTrip</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
-    <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=${initParam.kakaoJavascriptKey}"></script>
+    <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=${kakaoJavascriptKey}"></script>
 </head>
 <body>
 <jsp:include page="/WEB-INF/views/common/header.jsp"/>

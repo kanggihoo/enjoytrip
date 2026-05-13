@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <title>${hotplace.title} - EnjoyTrip</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
-    <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=${initParam.kakaoJavascriptKey}"></script>
+    <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=${kakaoJavascriptKey}"></script>
     <style>
         .detail-layout { display:flex; gap:24px; margin-top:20px; }
         .detail-image  { flex:0 0 340px; }

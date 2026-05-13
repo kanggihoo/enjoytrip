@@ -62,7 +62,7 @@
 </div>
 
 <script type="text/javascript"
-    src="//dapi.kakao.com/v2/maps/sdk.js?appkey=${initParam.kakaoJavascriptKey}">
+    src="//dapi.kakao.com/v2/maps/sdk.js?appkey=${kakaoJavascriptKey}">
 </script>
 <script>
 const PROXY = "${pageContext.request.contextPath}/attraction/api";

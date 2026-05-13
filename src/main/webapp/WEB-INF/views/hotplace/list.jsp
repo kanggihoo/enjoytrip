@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <title>핫플레이스 - EnjoyTrip</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
-    <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=${initParam.kakaoJavascriptKey}"></script>
+    <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=${kakaoJavascriptKey}"></script>
     <style>
         .hotplace-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-top:20px; }
         .hotplace-card { border:1px solid #ddd; border-radius:8px; overflow:hidden; transition:box-shadow .2s; }
