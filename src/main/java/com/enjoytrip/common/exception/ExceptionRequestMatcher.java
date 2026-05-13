@@ -1,6 +1,7 @@
 package com.enjoytrip.common.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.http.InvalidMediaTypeException;
 import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
 
@@ -20,8 +21,12 @@ final class ExceptionRequestMatcher {
             return false;
         }
 
-        return MediaType.parseMediaTypes(acceptHeader).stream()
-                .anyMatch(ExceptionRequestMatcher::isJsonMediaType);
+        try {
+            return MediaType.parseMediaTypes(acceptHeader).stream()
+                    .anyMatch(ExceptionRequestMatcher::isJsonMediaType);
+        } catch (InvalidMediaTypeException e) {
+            return false;
+        }
     }
 
     private static boolean isJsonMediaType(MediaType mediaType) {
