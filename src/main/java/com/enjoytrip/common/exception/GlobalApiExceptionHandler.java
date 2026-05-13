@@ -6,18 +6,26 @@ import com.enjoytrip.common.response.ApiErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @Slf4j
+@Order(Ordered.HIGHEST_PRECEDENCE)
 @RestControllerAdvice(basePackages = "com.enjoytrip")
 public class GlobalApiExceptionHandler {
 
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<ApiErrorResponse> handleBusinessException(BusinessException e, HttpServletRequest request) {
+        if (!isApiRequest(request)) {
+            throw e;
+        }
         ErrorCode errorCode = e.getErrorCode();
         log.warn("Business exception. code={}, path={}, message={}", errorCode.name(), request.getRequestURI(), e.getMessage());
         return ResponseEntity.status(errorCode.getStatus()).body(toBody(errorCode, request));
@@ -27,19 +35,28 @@ public class GlobalApiExceptionHandler {
             MethodArgumentTypeMismatchException.class,
             MissingServletRequestParameterException.class
     })
-    public ResponseEntity<ApiErrorResponse> handleBadRequest(Exception e, HttpServletRequest request) {
+    public ResponseEntity<ApiErrorResponse> handleBadRequest(Exception e, HttpServletRequest request) throws Exception {
+        if (!isApiRequest(request)) {
+            throw e;
+        }
         log.warn("Bad request. path={}, message={}", request.getRequestURI(), e.getMessage());
         return ResponseEntity.badRequest().body(toBody(ErrorCode.BAD_REQUEST, request));
     }
 
     @ExceptionHandler(DataAccessException.class)
     public ResponseEntity<ApiErrorResponse> handleDataAccess(DataAccessException e, HttpServletRequest request) {
+        if (!isApiRequest(request)) {
+            throw e;
+        }
         log.error("Database exception. path={}", request.getRequestURI(), e);
         return ResponseEntity.status(ErrorCode.DATABASE_ERROR.getStatus()).body(toBody(ErrorCode.DATABASE_ERROR, request));
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiErrorResponse> handleException(Exception e, HttpServletRequest request) {
+    public ResponseEntity<ApiErrorResponse> handleException(Exception e, HttpServletRequest request) throws Exception {
+        if (!isApiRequest(request)) {
+            throw e;
+        }
         log.error("Unhandled exception. path={}", request.getRequestURI(), e);
         return ResponseEntity.status(ErrorCode.INTERNAL_SERVER_ERROR.getStatus()).body(toBody(ErrorCode.INTERNAL_SERVER_ERROR, request));
     }
@@ -51,5 +68,25 @@ public class GlobalApiExceptionHandler {
                 .path(request.getRequestURI())
                 .timestamp(LocalDateTime.now())
                 .build();
+    }
+
+    private boolean isApiRequest(HttpServletRequest request) {
+        String servletPath = request.getServletPath();
+        if ("/api".equals(servletPath) || servletPath.startsWith("/api/")) {
+            return true;
+        }
+
+        String acceptHeader = request.getHeader("Accept");
+        if (!StringUtils.hasText(acceptHeader)) {
+            return false;
+        }
+
+        return MediaType.parseMediaTypes(acceptHeader).stream()
+                .anyMatch(this::isJsonMediaType);
+    }
+
+    private boolean isJsonMediaType(MediaType mediaType) {
+        String subtype = mediaType.getSubtype();
+        return "json".equals(subtype) || subtype.endsWith("+json");
     }
 }
