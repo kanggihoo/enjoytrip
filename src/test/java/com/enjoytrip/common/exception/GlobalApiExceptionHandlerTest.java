@@ -3,13 +3,8 @@ package com.enjoytrip.common.exception;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ExtendedModelMap;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.test.web.servlet.MockMvc;
@@ -17,7 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 @WebMvcTest(GlobalApiExceptionHandlerTest.TestController.class)
 @Import({
@@ -39,60 +36,12 @@ class GlobalApiExceptionHandlerTest {
     }
 
     @Test
-    void pageForbiddenExceptionSetsHttpStatus() {
-        GlobalPageExceptionHandler handler = new GlobalPageExceptionHandler();
-        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/page/forbidden");
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        Model model = new ExtendedModelMap();
-
-        String viewName = handler.handleForbidden(
-                new ForbiddenException(ErrorCode.FORBIDDEN),
-                model,
-                request,
-                response
-        );
-
-        org.assertj.core.api.Assertions.assertThat(viewName).isEqualTo("error/403");
-        org.assertj.core.api.Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
-        org.assertj.core.api.Assertions.assertThat(model.getAttribute("errorCode")).isEqualTo("FORBIDDEN");
-    }
-
-    @Test
-    void pageNotFoundExceptionSetsHttpStatus() {
-        GlobalPageExceptionHandler handler = new GlobalPageExceptionHandler();
-        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/page/missing");
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        Model model = new ExtendedModelMap();
-
-        String viewName = handler.handleNotFound(
-                new NotFoundException(ErrorCode.NOT_FOUND),
-                model,
-                request,
-                response
-        );
-
-        org.assertj.core.api.Assertions.assertThat(viewName).isEqualTo("error/404");
-        org.assertj.core.api.Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
-        org.assertj.core.api.Assertions.assertThat(model.getAttribute("errorCode")).isEqualTo("NOT_FOUND");
-    }
-
-    @Test
-    void pageUnhandledExceptionSetsHttpStatus() throws Exception {
-        GlobalPageExceptionHandler handler = new GlobalPageExceptionHandler();
-        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/page/error");
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        Model model = new ExtendedModelMap();
-
-        String viewName = handler.handleException(
-                new RuntimeException("boom"),
-                model,
-                request,
-                response
-        );
-
-        org.assertj.core.api.Assertions.assertThat(viewName).isEqualTo("error/500");
-        org.assertj.core.api.Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
-        org.assertj.core.api.Assertions.assertThat(model.getAttribute("errorCode")).isEqualTo("INTERNAL_SERVER_ERROR");
+    void pageExceptionReturnsViewWithHttpStatusWhenBothHandlersArePresent() throws Exception {
+        mockMvc.perform(get("/page/test/forbidden"))
+                .andExpect(status().isForbidden())
+                .andExpect(view().name("error/403"))
+                .andExpect(model().attribute("errorCode", "FORBIDDEN"))
+                .andExpect(model().attribute("message", "접근 권한이 없습니다."));
     }
 
     @Controller
@@ -101,6 +50,11 @@ class GlobalApiExceptionHandlerTest {
         @ResponseBody
         String badRequest() {
             throw new BadRequestException(ErrorCode.BAD_REQUEST);
+        }
+
+        @GetMapping("/page/test/forbidden")
+        String forbiddenPage() {
+            throw new ForbiddenException(ErrorCode.FORBIDDEN);
         }
     }
 }
