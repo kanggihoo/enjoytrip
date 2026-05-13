@@ -1,0 +1,105 @@
+/* EnjoyTrip 공통 스타일 */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+    background: #f8f9fa;
+    color: #333;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 16px;
+}
+
+h2 { font-size: 24px; margin-bottom: 16px; color: #1a1a1a; }
+h3 { font-size: 18px; margin-bottom: 10px; }
+h4 { font-size: 15px; margin-bottom: 8px; }
+
+/* 버튼 */
+.btn {
+    display: inline-block;
+    padding: 8px 18px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background: #fff;
+    color: #333;
+    text-decoration: none;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background .15s;
+}
+.btn:hover { background: #f0f0f0; }
+
+.btn-primary {
+    background: #1a73e8;
+    color: #fff;
+    border-color: #1a73e8;
+}
+.btn-primary:hover { background: #155db3; }
+
+/* 테이블 */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,.08);
+}
+.table th, .table td {
+    padding: 12px 14px;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+}
+.table th { background: #f5f7fa; font-weight: 600; color: #555; }
+.table tbody tr:hover { background: #fafbff; }
+
+/* 폼 테이블 */
+.form-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 6px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.08);
+    overflow: hidden;
+}
+.form-table th, .form-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+}
+.form-table th {
+    background: #f5f7fa;
+    width: 140px;
+    color: #555;
+    font-weight: 600;
+    text-align: right;
+}
+
+/* 입력 요소 */
+input[type="text"],
+input[type="date"],
+input[type="number"],
+input[type="email"],
+input[type="password"],
+textarea,
+select {
+    padding: 7px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    font-family: inherit;
+    transition: border-color .15s;
+}
+input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: #1a73e8;
+    box-shadow: 0 0 0 2px rgba(26,115,232,.15);
+}
+
+/* 페이지 구분선 */
+hr { border: none; border-top: 1px solid #e5e5e5; }

@@ -1,0 +1,77 @@
+target/
+.classpath
+# Compiled class file
+*.class
+.agents/
+
+# Log files
+*.log
+logs/
+
+# Environment variables / local secrets
+.env
+.env.*
+!.env.example
+
+# Runtime uploads
+uploads/
+WebContent/uploads/
+src/main/webapp/uploads/
+
+# Package Files #
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# virtual machine crash logs
+hs_err_pid*
+
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.restore
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# Eclipse
+.metadata
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.settings/
+.loadpath
+.recommenders
+.externalToolBuilders/
+*.launch
+.cproject
+.classpath
+.factorypath
+.project
+.springBeans
+.sts4-cache
+
+# IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# Visual Studio Code
+.vscode/
+
+# OS specific
+.DS_Store
+Thumbs.db
