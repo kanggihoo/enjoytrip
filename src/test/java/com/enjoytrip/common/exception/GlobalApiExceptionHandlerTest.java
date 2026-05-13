@@ -18,6 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(GlobalApiExceptionHandlerTest.TestController.class)
 @Import({
+        GlobalApiExceptionHandlerTest.TestController.class,
         GlobalApiExceptionHandler.class,
         GlobalPageExceptionHandler.class
 })
@@ -45,7 +46,7 @@ class GlobalApiExceptionHandlerTest {
     }
 
     @Controller
-    static class TestController {
+    public static class TestController {
         @GetMapping("/api/test/bad-request")
         @ResponseBody
         String badRequest() {
