@@ -17,6 +17,8 @@ public class EnjoyTripApplication extends SpringBootServletInitializer {
 
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
-        return builder.sources(EnjoyTripApplication.class);
+        return builder
+                .initializers(new DotenvApplicationContextInitializer())
+                .sources(EnjoyTripApplication.class);
     }
 }

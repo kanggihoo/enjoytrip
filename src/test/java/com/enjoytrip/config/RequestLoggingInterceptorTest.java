@@ -16,7 +16,13 @@ class RequestLoggingInterceptorTest {
     void maskedParamsHidesSensitiveValuesAndKeepsNormalValues() {
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.addParameter("serviceKey", "secret");
+        request.addParameter("service_key", "secret");
+        request.addParameter("api_key", "secret");
+        request.addParameter("accessToken", "secret");
+        request.addParameter("refreshToken", "secret");
+        request.addParameter("currentPassword", "secret");
         request.addParameter("keyword", "seoul", "busan");
+        request.addParameter("tokenizerMode", "standard");
 
         @SuppressWarnings("unchecked")
         Map<String, String> result = (Map<String, String>) ReflectionTestUtils.invokeMethod(
@@ -27,7 +33,13 @@ class RequestLoggingInterceptorTest {
 
         assertThat(result)
                 .containsEntry("serviceKey", "***")
-                .containsEntry("keyword", "seoul,busan");
+                .containsEntry("service_key", "***")
+                .containsEntry("api_key", "***")
+                .containsEntry("accessToken", "***")
+                .containsEntry("refreshToken", "***")
+                .containsEntry("currentPassword", "***")
+                .containsEntry("keyword", "seoul,busan")
+                .containsEntry("tokenizerMode", "standard");
     }
 
     @Test

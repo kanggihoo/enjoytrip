@@ -59,12 +59,20 @@ public class RequestLoggingInterceptor implements HandlerInterceptor {
     private Map<String, String> maskedParams(HttpServletRequest request) {
         Map<String, String> result = new LinkedHashMap<>();
         request.getParameterMap().forEach((key, values) -> {
-            String normalized = key.toLowerCase(Locale.ROOT);
-            String value = SENSITIVE_KEYS.contains(normalized)
+            String value = isSensitiveKey(key)
                     ? "***"
                     : Arrays.stream(values).collect(Collectors.joining(","));
             result.put(key, value);
         });
         return result;
+    }
+
+    private boolean isSensitiveKey(String key) {
+        String normalized = key.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "");
+        return SENSITIVE_KEYS.contains(normalized)
+                || normalized.endsWith("password")
+                || normalized.endsWith("token")
+                || normalized.endsWith("apikey")
+                || normalized.endsWith("servicekey");
     }
 }
