@@ -78,6 +78,26 @@ class TravelPlanServiceImplTest {
     }
 
     @Test
+    void createPlanWithDetailsSetsOwnerAndInsertsDetailsInOneOrchestration() {
+        TravelPlan plan = new TravelPlan();
+        plan.setPlanId(7);
+        PlanDetail first = new PlanDetail();
+        PlanDetail second = new PlanDetail();
+
+        int planId = service.createPlanWithDetails(plan, List.of(first, second), "ssafy");
+
+        assertThat(planId).isEqualTo(7);
+        assertThat(plan.getUserId()).isEqualTo("ssafy");
+        assertThat(first.getPlanId()).isEqualTo(7);
+        assertThat(first.getVisitOrder()).isEqualTo(1);
+        assertThat(second.getPlanId()).isEqualTo(7);
+        assertThat(second.getVisitOrder()).isEqualTo(2);
+        verify(mapper).insertPlan(plan);
+        verify(mapper).insertDetail(first);
+        verify(mapper).insertDetail(second);
+    }
+
+    @Test
     void addDetailChecksOwnerAndAppendsNextOrder() {
         when(mapper.selectPlanById(1)).thenReturn(plan(1, "ssafy"));
         when(mapper.selectDetailsByPlanId(1)).thenReturn(List.of(new PlanDetail(), new PlanDetail()));

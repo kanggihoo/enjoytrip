@@ -8,6 +8,7 @@ import java.util.List;
 public interface TravelPlanService {
 
     int createPlan(TravelPlan plan);
+    int createPlanWithDetails(TravelPlan plan, List<PlanDetail> details, String userId);
     TravelPlan getPlanById(int planId);
     List<TravelPlan> getPlansByUserId(String userId);
     void modifyPlan(TravelPlan plan, String userId);

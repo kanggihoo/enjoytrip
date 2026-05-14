@@ -28,6 +28,21 @@ public class TravelPlanServiceImpl implements TravelPlanService {
     }
 
     @Override
+    @Transactional
+    public int createPlanWithDetails(TravelPlan plan, List<PlanDetail> details, String userId) {
+        plan.setUserId(userId);
+        mapper.insertPlan(plan);
+        int planId = plan.getPlanId();
+        for (int i = 0; i < details.size(); i++) {
+            PlanDetail detail = details.get(i);
+            detail.setPlanId(planId);
+            detail.setVisitOrder(i + 1);
+            mapper.insertDetail(detail);
+        }
+        return planId;
+    }
+
+    @Override
     public TravelPlan getPlanById(int planId) {
         TravelPlan plan = mapper.selectPlanById(planId);
         if (plan != null) {

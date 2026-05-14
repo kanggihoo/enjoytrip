@@ -1,8 +1,11 @@
 package com.enjoytrip.plan.controller;
 
+import com.enjoytrip.common.exception.BadRequestException;
+import com.enjoytrip.common.exception.ErrorCode;
 import com.enjoytrip.plan.dto.PlanDetail;
 import com.enjoytrip.plan.dto.TravelPlan;
 import com.enjoytrip.plan.service.TravelPlanService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpSession;
@@ -49,21 +52,25 @@ public class PlanController {
         if (userId == null) {
             return "redirect:/user/login";
         }
-        plan.setUserId(userId);
-        int newPlanId = travelPlanService.createPlan(plan);
-
-        if (detailsJson != null && !detailsJson.trim().isEmpty() && !detailsJson.trim().equals("[]")) {
-            List<PlanDetail> details = objectMapper.readValue(
-                    detailsJson,
-                    new TypeReference<List<PlanDetail>>() {
-                    }
-            );
-            if (!details.isEmpty()) {
-                travelPlanService.replaceDetails(newPlanId, details, userId);
-            }
-        }
+        List<PlanDetail> details = parseDetails(detailsJson);
+        int newPlanId = travelPlanService.createPlanWithDetails(plan, details, userId);
 
         return "redirect:/plan/detail?planId=" + newPlanId;
+    }
+
+    private List<PlanDetail> parseDetails(String detailsJson) {
+        if (detailsJson != null && !detailsJson.trim().isEmpty() && !detailsJson.trim().equals("[]")) {
+            try {
+                return objectMapper.readValue(
+                        detailsJson,
+                        new TypeReference<List<PlanDetail>>() {
+                        }
+                );
+            } catch (JsonProcessingException e) {
+                throw new BadRequestException(ErrorCode.BAD_REQUEST);
+            }
+        }
+        return List.of();
     }
 
     @GetMapping("/plan/detail")
