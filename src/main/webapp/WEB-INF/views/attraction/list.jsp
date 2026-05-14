@@ -145,7 +145,7 @@
 </script>
 <script>
 const CONTEXT = "${pageContext.request.contextPath}";
-const PROXY = CONTEXT + "/attraction/api";
+const PROXY = CONTEXT + "/api/attractions";
 
 let map = null;
 let geocoder = null;
@@ -180,7 +180,7 @@ async function onSidoChange(sidoCode) {
     if (!sidoCode) return;
 
     try {
-        const json = await apiFetch("gugun", { sidoCode: sidoCode });
+        const json = await apiFetch("guguns", { sidoCode: sidoCode });
         const items = json.response.body.items;
         if (!items || !items.item) return;
 
@@ -252,7 +252,7 @@ function renderList(spots) {
             + '<div class="card-body">'
             + '<h4>' + escapeHtml(s.title || '') + '</h4>'
             + '<p>' + escapeHtml(s.addr1 || '') + '</p>'
-            + '<a class="detail-link" href="' + CONTEXT + '/attraction/detail?contentId=' + encodeURIComponent(s.contentid) + '">'
+            + '<a class="detail-link" href="' + CONTEXT + '/attractions/' + encodeURIComponent(s.contentid) + '">'
             + '상세보기 &rarr;</a>'
             + '</div>';
 
@@ -296,7 +296,7 @@ async function renderMarkers(spots) {
         kakao.maps.event.addListener(marker, 'mouseover', function() { overlay.setMap(map); });
         kakao.maps.event.addListener(marker, 'mouseout', function() { overlay.setMap(null); });
         kakao.maps.event.addListener(marker, 'click', function() {
-            location.href = CONTEXT + '/attraction/detail?contentId=' + encodeURIComponent(s.contentid);
+            location.href = CONTEXT + '/attractions/' + encodeURIComponent(s.contentid);
         });
     });
 

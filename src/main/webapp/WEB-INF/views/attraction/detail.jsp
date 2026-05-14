@@ -46,7 +46,7 @@
 
     <div id="error-msg">
         관광지 정보를 찾을 수 없습니다.<br><br>
-        <a href="${pageContext.request.contextPath}/attraction/list" class="btn-back">&larr; 목록으로</a>
+        <a href="${pageContext.request.contextPath}/attractions" class="btn-back">&larr; 목록으로</a>
     </div>
 
     <div id="detail-card">
@@ -56,7 +56,7 @@
             <div class="meta" id="d-meta"></div>
             <div class="overview" id="d-overview"></div>
             <div id="map"></div>
-            <a href="${pageContext.request.contextPath}/attraction/list" class="btn-back">&larr; 목록으로</a>
+            <a href="${pageContext.request.contextPath}/attractions" class="btn-back">&larr; 목록으로</a>
         </div>
     </div>
 </div>
@@ -65,18 +65,16 @@
     src="//dapi.kakao.com/v2/maps/sdk.js?appkey=${kakaoJavascriptKey}">
 </script>
 <script>
-const PROXY = "${pageContext.request.contextPath}/attraction/api";
+const PROXY = "${pageContext.request.contextPath}/api/attractions";
 
 // URL에서 contentId 추출
-const contentId = new URLSearchParams(window.location.search).get('contentId')
-               || '${contentId}';
+const contentId = '${contentId}' || new URLSearchParams(window.location.search).get('contentId');
 
 (async () => {
     if (!contentId) { showError(); return; }
 
     try {
-        const qs  = new URLSearchParams({ contentId });
-        const res = await fetch(PROXY + "/detail?" + qs);
+        const res = await fetch(PROXY + "/" + encodeURIComponent(contentId));
         const json = await res.json();
 
         const body  = json.response.body;

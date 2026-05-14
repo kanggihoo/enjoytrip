@@ -149,7 +149,7 @@
     src="//dapi.kakao.com/v2/maps/sdk.js?appkey=${kakaoJavascriptKey}&libraries=services">
 </script>
 <script>
-var PROXY   = '${pageContext.request.contextPath}/attraction/api';
+var PROXY   = '${pageContext.request.contextPath}/api/attractions';
 var CONTEXT = '${pageContext.request.contextPath}';
 
 /* ===== 카카오맵 초기화 ===== */
@@ -166,7 +166,7 @@ var selectedPlaces = [];
 
 /* ===== 시도 로드 ===== */
 (function loadSido() {
-    fetch(PROXY + '/sido')
+    fetch(PROXY + '/sidos')
         .then(function(r) { return r.json(); })
         .then(function(json) {
             var items = json.response.body.items;
@@ -187,7 +187,7 @@ function onSidoChange(sidoCode) {
     var sel = document.getElementById('gugunSelect');
     sel.innerHTML = '<option value="">-- 구/군 --</option>';
     if (!sidoCode) return;
-    fetch(PROXY + '/gugun?sidoCode=' + sidoCode)
+    fetch(PROXY + '/guguns?sidoCode=' + sidoCode)
         .then(function(r) { return r.json(); })
         .then(function(json) {
             var items = json.response.body.items;

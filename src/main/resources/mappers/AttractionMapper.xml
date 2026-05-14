@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.enjoytrip.attraction.mapper.AttractionMapper">
+
+    <select id="selectAllSido" resultType="com.enjoytrip.attraction.dto.Sido">
+        SELECT sido_code, sido_name
+        FROM sido
+        ORDER BY sido_code
+    </select>
+
+    <select id="selectGugunBySido" resultType="com.enjoytrip.attraction.dto.Gugun">
+        SELECT gugun_code, sido_code, gugun_name
+        FROM gugun
+        WHERE sido_code = #{sidoCode}
+        ORDER BY gugun_code
+    </select>
+
+    <select id="selectAttractions" resultType="com.enjoytrip.attraction.dto.AttractionInfo">
+        SELECT *
+        FROM attraction_info
+        WHERE 1 = 1
+        <if test="sidoCode > 0">
+            AND sido_code = #{sidoCode}
+        </if>
+        <if test="gugunCode > 0">
+            AND gugun_code = #{gugunCode}
+        </if>
+        <if test="contentTypeId > 0">
+            AND content_type_id = #{contentTypeId}
+        </if>
+        <if test="keyword != null and keyword.trim() != ''">
+            AND title LIKE CONCAT('%', #{keyword}, '%')
+        </if>
+        ORDER BY readcount DESC
+        LIMIT 100
+    </select>
+
+    <select id="selectAttractionById" resultType="com.enjoytrip.attraction.dto.AttractionInfo">
+        SELECT *
+        FROM attraction_info
+        WHERE content_id = #{contentId}
+    </select>
+
+    <update id="incrementReadcount">
+        UPDATE attraction_info
+        SET readcount = readcount + 1
+        WHERE content_id = #{contentId}
+    </update>
+</mapper>
