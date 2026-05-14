@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import java.util.Objects;
+
 @Controller
 public class BoardController {
 
@@ -62,8 +64,8 @@ public class BoardController {
             return "redirect:/user/login";
         }
         type = normalizeType(type);
-        Board board = boardService.getDetail(boardId);
-        if (!loginUser.equals(board.getUserId())) {
+        Board board = boardService.getForEdit(boardId, loginUser);
+        if (!Objects.equals(board.getUserId(), loginUser)) {
             return "redirect:/boards/" + boardId + "?type=" + type;
         }
         model.addAttribute("board", board);

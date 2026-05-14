@@ -27,7 +27,7 @@
 <div class="container">
     <h2><c:choose><c:when test="${type=='notice'}">공지사항</c:when><c:otherwise>자유게시판</c:otherwise></c:choose> 글쓰기</h2>
     <div class="form-card">
-        <form method="post" action="${pageContext.request.contextPath}/board/regist">
+        <form method="post" action="${pageContext.request.contextPath}/boards">
             <input type="hidden" name="type" value="${type}">
             <div class="form-group">
                 <label>제목 *</label>

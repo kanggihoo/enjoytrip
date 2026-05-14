@@ -126,13 +126,28 @@ class BoardControllerTest {
 
     @Test
     void editRedirectsToDetailWhenSessionUserIsNotOwner() throws Exception {
-        when(boardService.getDetail(1)).thenReturn(Board.builder().boardId(1).userId("owner").build());
+        when(boardService.getForEdit(1, "other")).thenReturn(Board.builder().boardId(1).userId("owner").build());
 
         mockMvc.perform(get("/boards/1/edit")
                         .sessionAttr("loginUser", "other")
                         .param("type", "free"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/boards/1?type=free"));
+    }
+
+    @Test
+    void editUsesNonMutatingServicePath() throws Exception {
+        Board board = Board.builder().boardId(1).userId("ssafy").build();
+        when(boardService.getForEdit(1, "ssafy")).thenReturn(board);
+
+        mockMvc.perform(get("/boards/1/edit")
+                        .sessionAttr("loginUser", "ssafy")
+                        .param("type", "free"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("board/modify"))
+                .andExpect(model().attribute("board", board));
+
+        verify(boardService).getForEdit(1, "ssafy");
     }
 
     @Test

@@ -27,7 +27,7 @@
 <div class="container">
     <h2>글 수정</h2>
     <div class="form-card">
-        <form method="post" action="${pageContext.request.contextPath}/board/update">
+        <form method="post" action="${pageContext.request.contextPath}/boards/${board.boardId}">
             <input type="hidden" name="boardId" value="${board.boardId}">
             <input type="hidden" name="type" value="${type}">
             <div class="form-group">

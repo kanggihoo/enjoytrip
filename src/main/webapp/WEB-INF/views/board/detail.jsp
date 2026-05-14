@@ -39,9 +39,12 @@
             <c:if test="${sessionScope.loginUser == board.userId}">
                 <div style="display:flex; gap:8px;">
                     <a href="${pageContext.request.contextPath}/board/modify?boardId=${board.boardId}&type=${type}" class="btn btn-edit">수정</a>
-                    <a href="${pageContext.request.contextPath}/board/delete?boardId=${board.boardId}&type=${type}"
-                       class="btn btn-delete"
-                       onclick="return confirm('삭제하시겠습니까?')">삭제</a>
+                    <form method="post" action="${pageContext.request.contextPath}/boards/${board.boardId}/delete"
+                          style="margin:0;"
+                          onsubmit="return confirm('삭제하시겠습니까?')">
+                        <input type="hidden" name="type" value="${type}">
+                        <button type="submit" class="btn btn-delete">삭제</button>
+                    </form>
                 </div>
             </c:if>
         </div>

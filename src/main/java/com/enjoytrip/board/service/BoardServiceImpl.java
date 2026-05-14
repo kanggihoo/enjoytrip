@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class BoardServiceImpl implements BoardService {
@@ -31,6 +32,11 @@ public class BoardServiceImpl implements BoardService {
         boardMapper.increaseViews(boardId);
         board.setViews(board.getViews() + 1);
         return board;
+    }
+
+    @Override
+    public Board getForEdit(int boardId, String loginUserId) {
+        return requireBoard(boardId);
     }
 
     @Override
@@ -62,7 +68,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     private void requireOwner(Board board, String loginUserId) {
-        if (!board.getUserId().equals(loginUserId)) {
+        if (!Objects.equals(board.getUserId(), loginUserId)) {
             throw new ForbiddenException(ErrorCode.FORBIDDEN);
         }
     }
