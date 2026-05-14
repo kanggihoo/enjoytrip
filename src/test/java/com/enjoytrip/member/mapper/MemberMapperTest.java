@@ -29,6 +29,15 @@ class MemberMapperTest extends AbstractMySqlContainerTest {
     }
 
     @Test
+    void selectSeedMember() {
+        Member result = memberMapper.selectMemberById("ssafy");
+
+        assertThat(result).isNotNull();
+        assertThat(result.getUserId()).isEqualTo("ssafy");
+        assertThat(result.getEmail()).isEqualTo("admin@enjoytrip.com");
+    }
+
+    @Test
     void insertAndSelectMember() {
         Member member = Member.builder()
                 .userId("mapper-user")

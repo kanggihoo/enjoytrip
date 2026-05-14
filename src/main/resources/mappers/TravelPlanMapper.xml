@@ -34,7 +34,7 @@
         DELETE FROM travel_plan WHERE plan_id = #{planId}
     </delete>
 
-    <insert id="insertDetail" parameterType="com.enjoytrip.plan.dto.PlanDetail">
+    <insert id="insertDetail" parameterType="com.enjoytrip.plan.dto.PlanDetail" useGeneratedKeys="true" keyProperty="detailId">
         INSERT INTO plan_detail (plan_id, content_id, title, latitude, longitude, visit_order, visit_date, memo)
         VALUES (#{planId}, #{contentId}, #{title}, #{latitude}, #{longitude}, #{visitOrder}, #{visitDate}, #{memo})
     </insert>
