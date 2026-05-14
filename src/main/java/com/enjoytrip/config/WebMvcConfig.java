@@ -26,7 +26,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 .addPathPatterns(
                         "/plans/**",
                         "/api/plans/**",
-                        "/boards/new", "/boards/*/edit", "/boards/*/delete", "/boards",
+                        "/boards/new", "/boards/*/edit", "/boards/*/delete",
                         "/hotplaces/new", "/hotplaces/*/edit", "/hotplaces/*/delete", "/hotplaces",
                         "/members/**",
                         "/user/logout", "/user/mypage", "/user/modify", "/user/delete"

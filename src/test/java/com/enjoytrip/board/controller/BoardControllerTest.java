@@ -33,17 +33,60 @@ class BoardControllerTest {
     BoardService boardService;
 
     @Test
-    void listReturnsBoardListView() throws Exception {
-        List<Board> boards = List.of(Board.builder().boardId(1).type("free").title("title").build());
-        when(boardService.getList("free")).thenReturn(boards);
+    void listAllowsAnonymousBoardListView() throws Exception {
+        List<Board> boards = List.of(Board.builder().boardId(1).type("notice").title("title").build());
+        when(boardService.getList("notice")).thenReturn(boards);
 
         mockMvc.perform(get("/boards")
-                        .sessionAttr("loginUser", "ssafy")
-                        .param("type", "free"))
+                        .param("type", "notice"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("board/list"))
                 .andExpect(model().attribute("boardList", boards))
-                .andExpect(model().attribute("type", "free"));
+                .andExpect(model().attribute("type", "notice"));
+    }
+
+    @Test
+    void detailAllowsAnonymousBoardDetailView() throws Exception {
+        Board board = Board.builder().boardId(1).type("notice").title("title").build();
+        when(boardService.getDetail(1)).thenReturn(board);
+
+        mockMvc.perform(get("/boards/1")
+                        .param("type", "notice"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("board/detail"))
+                .andExpect(model().attribute("board", board))
+                .andExpect(model().attribute("type", "notice"));
+    }
+
+    @Test
+    void newFormRequiresSessionAuth() throws Exception {
+        mockMvc.perform(get("/boards/new").param("type", "free"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/user/login"));
+    }
+
+    @Test
+    void writeRequiresSessionAuth() throws Exception {
+        mockMvc.perform(post("/boards")
+                        .param("type", "free")
+                        .param("title", "title")
+                        .param("content", "content"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/user/login"));
+    }
+
+    @Test
+    void editRequiresSessionAuth() throws Exception {
+        mockMvc.perform(get("/boards/1/edit").param("type", "free"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/user/login"));
+    }
+
+    @Test
+    void deleteRequiresSessionAuth() throws Exception {
+        mockMvc.perform(post("/boards/1/delete").param("type", "free"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/user/login"));
     }
 
     @Test
