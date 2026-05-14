@@ -7,8 +7,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.web.util.UriUtils;
 
 import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 @Component
 public class TourApiClient {
@@ -25,7 +28,7 @@ public class TourApiClient {
         URI uri = commonUri("areaCode2")
                 .queryParam("numOfRows", 50)
                 .queryParam("pageNo", 1)
-                .build()
+                .build(true)
                 .toUri();
         return get(uri);
     }
@@ -35,7 +38,7 @@ public class TourApiClient {
                 .queryParam("numOfRows", 100)
                 .queryParam("pageNo", 1);
         append(builder, "areaCode", sidoCode);
-        return get(builder.build().toUri());
+        return get(builder.build(true).toUri());
     }
 
     public String search(AttractionSearchRequest request) {
@@ -46,7 +49,7 @@ public class TourApiClient {
         append(builder, "sigunguCode", request.getSigunguCode());
         append(builder, "contentTypeId", request.getContentTypeId());
         append(builder, "keyword", request.getKeyword());
-        return get(builder.build().toUri());
+        return get(builder.build(true).toUri());
     }
 
     public String detail(Integer contentId) {
@@ -54,22 +57,35 @@ public class TourApiClient {
                 .queryParam("numOfRows", 1)
                 .queryParam("pageNo", 1);
         append(builder, "contentId", contentId);
-        return get(builder.build().toUri());
+        return get(builder.build(true).toUri());
     }
 
     private UriComponentsBuilder commonUri(String path) {
         return UriComponentsBuilder.fromHttpUrl(properties.baseUrl())
                 .pathSegment(path)
-                .queryParam("serviceKey", properties.serviceKey())
-                .queryParam("MobileOS", properties.mobileOs())
-                .queryParam("MobileApp", properties.mobileApp())
+                .queryParam("serviceKey", encode(serviceKey()))
+                .queryParam("MobileOS", encode(properties.mobileOs()))
+                .queryParam("MobileApp", encode(properties.mobileApp()))
                 .queryParam("_type", "json");
+    }
+
+    private String serviceKey() {
+        // Accept a decoded or already URL-encoded portal key, then encode query values exactly once.
+        try {
+            return UriUtils.decode(properties.serviceKey(), StandardCharsets.UTF_8);
+        } catch (IllegalArgumentException e) {
+            return properties.serviceKey();
+        }
     }
 
     private void append(UriComponentsBuilder builder, String name, Object value) {
         if (value != null && !value.toString().isBlank()) {
-            builder.queryParam(name, value);
+            builder.queryParam(name, encode(value.toString()));
         }
+    }
+
+    private String encode(String value) {
+        return URLEncoder.encode(value, StandardCharsets.UTF_8).replace("+", "%20");
     }
 
     private String get(URI uri) {

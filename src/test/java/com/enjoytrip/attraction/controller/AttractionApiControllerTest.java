@@ -31,6 +31,7 @@ class AttractionApiControllerTest {
 
         mockMvc.perform(get("/api/attractions/sidos"))
                 .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json"))
                 .andExpect(content().json("{\"sidos\":[]}"));
     }
 
@@ -40,6 +41,7 @@ class AttractionApiControllerTest {
 
         mockMvc.perform(get("/api/attractions/guguns").param("sidoCode", "1"))
                 .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json"))
                 .andExpect(content().json("{\"guguns\":[]}"));
 
         verify(tourApiClient).getGuguns(1);
@@ -58,6 +60,7 @@ class AttractionApiControllerTest {
                         .param("pageNo", "4")
                         .param("numOfRows", "30"))
                 .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json"))
                 .andExpect(content().json("{\"items\":[]}"));
 
         var requestCaptor = forClass(AttractionSearchRequest.class);
@@ -77,6 +80,7 @@ class AttractionApiControllerTest {
 
         mockMvc.perform(get("/api/attractions/123"))
                 .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json"))
                 .andExpect(content().json("{\"contentid\":123}"));
 
         verify(tourApiClient).detail(123);

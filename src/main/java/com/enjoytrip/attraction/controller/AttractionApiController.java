@@ -2,6 +2,7 @@ package com.enjoytrip.attraction.controller;
 
 import com.enjoytrip.attraction.client.TourApiClient;
 import com.enjoytrip.attraction.dto.AttractionSearchRequest;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -22,21 +23,27 @@ public class AttractionApiController {
 
     @GetMapping("/sidos")
     public ResponseEntity<String> sidos() {
-        return ResponseEntity.ok(tourApiClient.getSidos());
+        return json(tourApiClient.getSidos());
     }
 
     @GetMapping("/guguns")
     public ResponseEntity<String> guguns(@RequestParam Integer sidoCode) {
-        return ResponseEntity.ok(tourApiClient.getGuguns(sidoCode));
+        return json(tourApiClient.getGuguns(sidoCode));
     }
 
     @GetMapping("/search")
     public ResponseEntity<String> search(@ModelAttribute AttractionSearchRequest request) {
-        return ResponseEntity.ok(tourApiClient.search(request));
+        return json(tourApiClient.search(request));
     }
 
     @GetMapping("/{contentId}")
     public ResponseEntity<String> detail(@PathVariable Integer contentId) {
-        return ResponseEntity.ok(tourApiClient.detail(contentId));
+        return json(tourApiClient.detail(contentId));
+    }
+
+    private ResponseEntity<String> json(String body) {
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(body);
     }
 }

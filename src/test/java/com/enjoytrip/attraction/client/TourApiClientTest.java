@@ -53,6 +53,36 @@ class TourApiClientTest {
     }
 
     @Test
+    void serviceKeyIsSingleEncodedWhenConfiguredDecoded() throws Exception {
+        TourApiClient decodedKeyClient = new TourApiClient(
+                RestClient.builder(),
+                new TourApiProperties(server.url("/tour").toString(), "abc+123==", "ETC", "EnjoyTripTest")
+        );
+        server.enqueue(new MockResponse().setBody("{\"ok\":true}").addHeader("Content-Type", "application/json"));
+
+        decodedKeyClient.getSidos();
+
+        RecordedRequest request = server.takeRequest();
+        assertThat(request.getPath()).contains("serviceKey=abc%2B123%3D%3D");
+        assertThat(request.getPath()).doesNotContain("serviceKey=abc+123==");
+    }
+
+    @Test
+    void serviceKeyIsNotDoubleEncodedWhenConfiguredEncoded() throws Exception {
+        TourApiClient encodedKeyClient = new TourApiClient(
+                RestClient.builder(),
+                new TourApiProperties(server.url("/tour").toString(), "abc%2B123%3D%3D", "ETC", "EnjoyTripTest")
+        );
+        server.enqueue(new MockResponse().setBody("{\"ok\":true}").addHeader("Content-Type", "application/json"));
+
+        encodedKeyClient.getSidos();
+
+        RecordedRequest request = server.takeRequest();
+        assertThat(request.getPath()).contains("serviceKey=abc%2B123%3D%3D");
+        assertThat(request.getPath()).doesNotContain("serviceKey=abc%252B123%253D%253D");
+    }
+
+    @Test
     void getGugunsAppendsSidoCodeAsAreaCode() throws Exception {
         server.enqueue(new MockResponse().setBody("{\"items\":[]}").addHeader("Content-Type", "application/json"));
 
@@ -86,6 +116,24 @@ class TourApiClientTest {
         assertThat(request.getRequestUrl().queryParameter("keyword")).isEqualTo("한라산");
         assertThat(request.getRequestUrl().queryParameter("pageNo")).isEqualTo("3");
         assertThat(request.getRequestUrl().queryParameter("numOfRows")).isEqualTo("20");
+    }
+
+    @Test
+    void searchOmitsBlankKeywordAndNullOptionalParams() throws Exception {
+        server.enqueue(new MockResponse().setBody("{\"totalCount\":0}").addHeader("Content-Type", "application/json"));
+
+        client.search(AttractionSearchRequest.builder()
+                .keyword("   ")
+                .build());
+
+        RecordedRequest request = server.takeRequest();
+        assertThat(request.getPath()).startsWith("/tour/areaBasedList2?");
+        assertThat(request.getRequestUrl().queryParameter("keyword")).isNull();
+        assertThat(request.getRequestUrl().queryParameter("areaCode")).isNull();
+        assertThat(request.getRequestUrl().queryParameter("sigunguCode")).isNull();
+        assertThat(request.getRequestUrl().queryParameter("contentTypeId")).isNull();
+        assertThat(request.getRequestUrl().queryParameter("pageNo")).isEqualTo("1");
+        assertThat(request.getRequestUrl().queryParameter("numOfRows")).isEqualTo("100");
     }
 
     @Test
