@@ -1,40 +1,49 @@
 package com.enjoytrip.member.service;
 
-import com.enjoytrip.member.dao.MemberDao;
-import com.enjoytrip.member.dao.MemberDaoImpl;
+import com.enjoytrip.common.exception.BusinessException;
+import com.enjoytrip.common.exception.ErrorCode;
 import com.enjoytrip.member.dto.Member;
+import com.enjoytrip.member.mapper.MemberMapper;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.SQLException;
-
+@Service
 public class MemberServiceImpl implements MemberService {
 
-    private final MemberDao dao = new MemberDaoImpl();
+    private final MemberMapper memberMapper;
+
+    public MemberServiceImpl(MemberMapper memberMapper) {
+        this.memberMapper = memberMapper;
+    }
 
     @Override
-    public void join(Member member) throws SQLException, IllegalArgumentException {
-        if (dao.existsUserId(member.getUserId())) {
-            throw new IllegalArgumentException("이미 사용 중인 아이디입니다.");
+    @Transactional
+    public void join(Member member) {
+        if (memberMapper.existsUserId(member.getUserId())) {
+            throw new BusinessException(ErrorCode.DUPLICATE_USER_ID);
         }
-        dao.insertMember(member);
+        memberMapper.insertMember(member);
     }
 
     @Override
-    public Member login(String userId, String userPw) throws SQLException {
-        return dao.selectMemberByIdAndPw(userId, userPw);
+    public Member login(String userId, String userPw) {
+        return memberMapper.selectMemberByIdAndPw(userId, userPw);
     }
 
     @Override
-    public Member getMemberById(String userId) throws SQLException {
-        return dao.selectMemberById(userId);
+    public Member getMemberById(String userId) {
+        return memberMapper.selectMemberById(userId);
     }
 
     @Override
-    public void modifyMember(Member member) throws SQLException {
-        dao.updateMember(member);
+    @Transactional
+    public void modifyMember(Member member) {
+        memberMapper.updateMember(member);
     }
 
     @Override
-    public void removeMember(String userId) throws SQLException {
-        dao.deleteMember(userId);
+    @Transactional
+    public void removeMember(String userId) {
+        memberMapper.deleteMember(userId);
     }
 }

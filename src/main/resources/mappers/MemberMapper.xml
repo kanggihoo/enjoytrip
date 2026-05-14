@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.enjoytrip.member.mapper.MemberMapper">
+    <insert id="insertMember" parameterType="com.enjoytrip.member.dto.Member">
+        INSERT INTO member (user_id, user_pw, user_name, email)
+        VALUES (#{userId}, #{userPw}, #{userName}, #{email})
+    </insert>
+
+    <select id="selectMemberById" resultType="com.enjoytrip.member.dto.Member">
+        SELECT user_id, user_pw, user_name, email, join_date
+        FROM member
+        WHERE user_id = #{userId}
+    </select>
+
+    <select id="selectMemberByIdAndPw" resultType="com.enjoytrip.member.dto.Member">
+        SELECT user_id, user_pw, user_name, email, join_date
+        FROM member
+        WHERE user_id = #{userId}
+          AND user_pw = #{userPw}
+    </select>
+
+    <update id="updateMember" parameterType="com.enjoytrip.member.dto.Member">
+        UPDATE member
+        SET user_pw = #{userPw},
+            user_name = #{userName},
+            email = #{email}
+        WHERE user_id = #{userId}
+    </update>
+
+    <delete id="deleteMember">
+        DELETE FROM member WHERE user_id = #{userId}
+    </delete>
+
+    <select id="existsUserId" resultType="boolean">
+        SELECT EXISTS(SELECT 1 FROM member WHERE user_id = #{userId})
+    </select>
+</mapper>
