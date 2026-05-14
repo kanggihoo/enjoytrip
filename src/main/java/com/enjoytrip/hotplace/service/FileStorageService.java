@@ -1,5 +1,6 @@
 package com.enjoytrip.hotplace.service;
 
+import com.enjoytrip.common.exception.BadRequestException;
 import com.enjoytrip.common.exception.ErrorCode;
 import com.enjoytrip.common.exception.FileStorageException;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,10 +10,21 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
 public class FileStorageService {
+
+    private static final Set<String> ALLOWED_EXTENSIONS = Set.of(".jpg", ".jpeg", ".png", ".gif", ".webp");
+    private static final Map<String, String> CONTENT_TYPE_EXTENSIONS = Map.of(
+            "image/jpeg", ".jpg",
+            "image/png", ".png",
+            "image/gif", ".gif",
+            "image/webp", ".webp"
+    );
 
     private final Path uploadDir;
 
@@ -24,11 +36,7 @@ public class FileStorageService {
         if (file == null || file.isEmpty()) {
             return "";
         }
-        String originalName = file.getOriginalFilename();
-        String extension = "";
-        if (originalName != null && originalName.contains(".")) {
-            extension = originalName.substring(originalName.lastIndexOf('.'));
-        }
+        String extension = resolveExtension(file);
         String savedName = UUID.randomUUID() + extension;
         try {
             Files.createDirectories(uploadDir);
@@ -37,5 +45,32 @@ public class FileStorageService {
         } catch (IOException e) {
             throw new FileStorageException(ErrorCode.FILE_UPLOAD_ERROR, e);
         }
+    }
+
+    private String resolveExtension(MultipartFile file) {
+        String contentTypeExtension = CONTENT_TYPE_EXTENSIONS.get(normalizeContentType(file.getContentType()));
+        if (contentTypeExtension == null) {
+            throw new BadRequestException(ErrorCode.BAD_REQUEST);
+        }
+
+        String originalName = file.getOriginalFilename();
+        if (originalName != null && originalName.contains(".")) {
+            String extension = originalName.substring(originalName.lastIndexOf('.')).toLowerCase(Locale.ROOT);
+            if (ALLOWED_EXTENSIONS.contains(extension) && matchesContentType(extension, contentTypeExtension)) {
+                return extension;
+            }
+            throw new BadRequestException(ErrorCode.BAD_REQUEST);
+        }
+
+        return contentTypeExtension;
+    }
+
+    private String normalizeContentType(String contentType) {
+        return contentType == null ? "" : contentType.toLowerCase(Locale.ROOT);
+    }
+
+    private boolean matchesContentType(String extension, String contentTypeExtension) {
+        return extension.equals(contentTypeExtension)
+                || (contentTypeExtension.equals(".jpg") && extension.equals(".jpeg"));
     }
 }

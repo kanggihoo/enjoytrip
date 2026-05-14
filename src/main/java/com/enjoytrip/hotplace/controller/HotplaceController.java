@@ -72,15 +72,15 @@ public class HotplaceController {
     public String modify(@PathVariable int hotplaceId,
                          @ModelAttribute Hotplace hotplace,
                          @RequestParam(value = "image", required = false) MultipartFile image,
-                         @RequestParam(value = "existingImage", required = false) String existingImage,
                          HttpSession session) {
         String loginUser = (String) session.getAttribute("loginUser");
         if (loginUser == null) {
             return "redirect:/user/login";
         }
         hotplace.setHotplaceId(hotplaceId);
+        Hotplace savedHotplace = hotplaceService.getHotplaceForEdit(hotplaceId, loginUser);
         String imagePath = fileStorageService.store(image);
-        hotplace.setImagePath(imagePath.isEmpty() ? existingImage : imagePath);
+        hotplace.setImagePath(imagePath.isEmpty() ? savedHotplace.getImagePath() : imagePath);
         hotplaceService.modifyHotplace(hotplace, loginUser);
         return "redirect:/hotplaces/" + hotplaceId;
     }

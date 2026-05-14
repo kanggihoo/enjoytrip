@@ -1,5 +1,8 @@
 package com.enjoytrip.config;
 
+import java.nio.file.Path;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -10,10 +13,15 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     private final AuthInterceptor authInterceptor;
     private final RequestLoggingInterceptor requestLoggingInterceptor;
+    private final String uploadResourceLocation;
 
-    public WebMvcConfig(AuthInterceptor authInterceptor, RequestLoggingInterceptor requestLoggingInterceptor) {
+    public WebMvcConfig(AuthInterceptor authInterceptor,
+                        RequestLoggingInterceptor requestLoggingInterceptor,
+                        @Value("${app.upload-dir:uploads}") String uploadDir) {
         this.authInterceptor = authInterceptor;
         this.requestLoggingInterceptor = requestLoggingInterceptor;
+        String location = Path.of(uploadDir).toAbsolutePath().normalize().toUri().toString();
+        this.uploadResourceLocation = location.endsWith("/") ? location : location + "/";
     }
 
     @Override
@@ -43,6 +51,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/css/**").addResourceLocations("/css/");
-        registry.addResourceHandler("/uploads/**").addResourceLocations("file:uploads/");
+        registry.addResourceHandler("/uploads/**").addResourceLocations(uploadResourceLocation);
     }
 }

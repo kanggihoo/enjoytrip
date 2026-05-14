@@ -116,19 +116,23 @@ class HotplaceControllerTest {
 
     @Test
     void modifyUsesSessionUserForOwnershipAndExistingImageWhenNoUpload() throws Exception {
+        Hotplace savedHotplace = hotplace(1, "ssafy");
+        savedHotplace.setImagePath("uploads/server-old.jpg");
+        when(hotplaceService.getHotplaceForEdit(1, "ssafy")).thenReturn(savedHotplace);
         when(fileStorageService.store(any())).thenReturn("");
 
         mockMvc.perform(multipart("/hotplaces/1")
                         .file(new MockMultipartFile("image", new byte[0]))
                         .sessionAttr("loginUser", "ssafy")
                         .param("title", "updated")
-                        .param("existingImage", "uploads/old.jpg"))
+                        .param("existingImage", "uploads/tampered.html"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/hotplaces/1"));
 
         var hotplaceCaptor = forClass(Hotplace.class);
+        verify(hotplaceService).getHotplaceForEdit(1, "ssafy");
         verify(hotplaceService).modifyHotplace(hotplaceCaptor.capture(), eq("ssafy"));
-        assertThat(hotplaceCaptor.getValue().getImagePath()).isEqualTo("uploads/old.jpg");
+        assertThat(hotplaceCaptor.getValue().getImagePath()).isEqualTo("uploads/server-old.jpg");
     }
 
     @Test

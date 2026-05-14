@@ -1,5 +1,6 @@
 package com.enjoytrip.hotplace.service;
 
+import com.enjoytrip.common.exception.BadRequestException;
 import com.enjoytrip.common.exception.FileStorageException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -35,6 +36,33 @@ class FileStorageServiceTest {
 
         assertThat(savedPath).startsWith("uploads/").endsWith(".jpg");
         assertThat(Files.exists(uploadDir.resolve(savedPath.substring("uploads/".length())))).isTrue();
+    }
+
+    @Test
+    void storeRejectsHtmlUpload() {
+        FileStorageService service = new FileStorageService(uploadDir.toString());
+        MockMultipartFile file = new MockMultipartFile("image", "place.html", "text/html", "html".getBytes());
+
+        assertThatThrownBy(() -> service.store(file))
+                .isInstanceOf(BadRequestException.class);
+    }
+
+    @Test
+    void storeRejectsSvgUpload() {
+        FileStorageService service = new FileStorageService(uploadDir.toString());
+        MockMultipartFile file = new MockMultipartFile("image", "place.svg", "image/svg+xml", "svg".getBytes());
+
+        assertThatThrownBy(() -> service.store(file))
+                .isInstanceOf(BadRequestException.class);
+    }
+
+    @Test
+    void storeRejectsAllowedExtensionWithUnsupportedContentType() {
+        FileStorageService service = new FileStorageService(uploadDir.toString());
+        MockMultipartFile file = new MockMultipartFile("image", "place.jpg", "text/html", "html".getBytes());
+
+        assertThatThrownBy(() -> service.store(file))
+                .isInstanceOf(BadRequestException.class);
     }
 
     @Test
