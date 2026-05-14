@@ -2,145 +2,133 @@ package com.enjoytrip.board.controller;
 
 import com.enjoytrip.board.dto.Board;
 import com.enjoytrip.board.service.BoardService;
-import com.enjoytrip.board.service.BoardServiceImpl;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 
-import java.io.IOException;
-import java.util.List;
+@Controller
+public class BoardController {
 
-@WebServlet("/board/*")
-public class BoardController extends HttpServlet {
+    private final BoardService boardService;
 
-    private final BoardService service = new BoardServiceImpl();
+    public BoardController(BoardService boardService) {
+        this.boardService = boardService;
+    }
 
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
-        String path = req.getPathInfo();
-        if (path == null) path = "/list";
-        switch (path) {
-            case "/list":   showList(req, resp);   break;
-            case "/write":  showWrite(req, resp);  break;
-            case "/detail": showDetail(req, resp); break;
-            case "/modify": showModify(req, resp); break;
-            case "/delete": processDelete(req, resp); break;
-            default: resp.sendRedirect(req.getContextPath() + "/board/list?type=free");
+    @GetMapping("/boards")
+    public String list(String type, Model model) {
+        type = normalizeType(type);
+        model.addAttribute("boardList", boardService.getList(type));
+        model.addAttribute("type", type);
+        return "board/list";
+    }
+
+    @GetMapping("/boards/new")
+    public String writeForm(String type, HttpSession session, Model model) {
+        if (session.getAttribute("loginUser") == null) {
+            return "redirect:/user/login";
         }
+        model.addAttribute("type", normalizeType(type));
+        return "board/write";
     }
 
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
-        req.setCharacterEncoding("UTF-8");
-        String path = req.getPathInfo();
-        if (path == null) path = "/";
-        switch (path) {
-            case "/regist": processWrite(req, resp);  break;
-            case "/update": processModify(req, resp); break;
-            default: resp.sendRedirect(req.getContextPath() + "/board/list?type=free");
+    @PostMapping("/boards")
+    public String write(@ModelAttribute Board board, HttpSession session) {
+        String loginUser = (String) session.getAttribute("loginUser");
+        if (loginUser == null) {
+            return "redirect:/user/login";
         }
+        board.setType(normalizeType(board.getType()));
+        board.setUserId(loginUser);
+        int boardId = boardService.write(board);
+        return "redirect:/boards/" + boardId + "?type=" + board.getType();
     }
 
-    private void showList(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
-        String type = req.getParameter("type");
-        if (type == null || (!type.equals("notice") && !type.equals("free"))) type = "free";
-        try {
-            List<Board> list = service.getList(type);
-            req.setAttribute("boardList", list);
-            req.setAttribute("type", type);
-            req.getRequestDispatcher("/WEB-INF/views/board/list.jsp").forward(req, resp);
-        } catch (Exception e) { throw new ServletException(e); }
+    @GetMapping("/boards/{boardId}")
+    public String detail(@PathVariable int boardId, String type, Model model) {
+        model.addAttribute("board", boardService.getDetail(boardId));
+        model.addAttribute("type", normalizeType(type));
+        return "board/detail";
     }
 
-    private void showWrite(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
-        if (req.getSession().getAttribute("loginUser") == null) {
-            resp.sendRedirect(req.getContextPath() + "/user/login");
-            return;
+    @GetMapping("/boards/{boardId}/edit")
+    public String editForm(@PathVariable int boardId, String type, HttpSession session, Model model) {
+        String loginUser = (String) session.getAttribute("loginUser");
+        if (loginUser == null) {
+            return "redirect:/user/login";
         }
-        String type = req.getParameter("type");
-        if (type == null) type = "free";
-        req.setAttribute("type", type);
-        req.getRequestDispatcher("/WEB-INF/views/board/write.jsp").forward(req, resp);
+        type = normalizeType(type);
+        Board board = boardService.getDetail(boardId);
+        if (!loginUser.equals(board.getUserId())) {
+            return "redirect:/boards/" + boardId + "?type=" + type;
+        }
+        model.addAttribute("board", board);
+        model.addAttribute("type", type);
+        return "board/modify";
     }
 
-    private void showDetail(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
-        String idParam = req.getParameter("boardId");
-        String type    = req.getParameter("type");
-        if (type == null) type = "free";
-        if (idParam == null) { resp.sendRedirect(req.getContextPath() + "/board/list?type=" + type); return; }
-        try {
-            Board board = service.getDetail(Integer.parseInt(idParam));
-            req.setAttribute("board", board);
-            req.setAttribute("type", type);
-            req.getRequestDispatcher("/WEB-INF/views/board/detail.jsp").forward(req, resp);
-        } catch (Exception e) { throw new ServletException(e); }
+    @PostMapping("/boards/{boardId}")
+    public String modify(@PathVariable int boardId, @ModelAttribute Board board, String type, HttpSession session) {
+        String loginUser = (String) session.getAttribute("loginUser");
+        if (loginUser == null) {
+            return "redirect:/user/login";
+        }
+        type = normalizeType(type);
+        board.setBoardId(boardId);
+        boardService.modify(board, loginUser);
+        return "redirect:/boards/" + boardId + "?type=" + type;
     }
 
-    private void showModify(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
-        String loginUser = (String) req.getSession().getAttribute("loginUser");
-        if (loginUser == null) { resp.sendRedirect(req.getContextPath() + "/user/login"); return; }
-        String idParam = req.getParameter("boardId");
-        String type    = req.getParameter("type");
-        if (type == null) type = "free";
-        try {
-            Board board = service.getDetail(Integer.parseInt(idParam));
-            if (!loginUser.equals(board.getUserId())) {
-                resp.sendRedirect(req.getContextPath() + "/board/detail?boardId=" + idParam + "&type=" + type);
-                return;
-            }
-            req.setAttribute("board", board);
-            req.setAttribute("type", type);
-            req.getRequestDispatcher("/WEB-INF/views/board/modify.jsp").forward(req, resp);
-        } catch (Exception e) { throw new ServletException(e); }
+    @PostMapping("/boards/{boardId}/delete")
+    public String delete(@PathVariable int boardId, String type, HttpSession session) {
+        String loginUser = (String) session.getAttribute("loginUser");
+        if (loginUser == null) {
+            return "redirect:/user/login";
+        }
+        type = normalizeType(type);
+        boardService.remove(boardId, loginUser);
+        return "redirect:/boards?type=" + type;
     }
 
-    private void processWrite(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
-        String loginUser = (String) req.getSession().getAttribute("loginUser");
-        if (loginUser == null) { resp.sendRedirect(req.getContextPath() + "/user/login"); return; }
-        Board b = new Board();
-        b.setType(req.getParameter("type"));
-        b.setTitle(req.getParameter("title"));
-        b.setContent(req.getParameter("content"));
-        b.setUserId(loginUser);
-        try {
-            int id = service.write(b);
-            resp.sendRedirect(req.getContextPath() + "/board/detail?boardId=" + id + "&type=" + b.getType());
-        } catch (Exception e) { throw new ServletException(e); }
+    @GetMapping("/board/list")
+    public String legacyList(String type) {
+        return "redirect:/boards?type=" + normalizeType(type);
     }
 
-    private void processModify(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
-        String loginUser = (String) req.getSession().getAttribute("loginUser");
-        if (loginUser == null) { resp.sendRedirect(req.getContextPath() + "/user/login"); return; }
-        Board b = new Board();
-        b.setBoardId(Integer.parseInt(req.getParameter("boardId")));
-        b.setTitle(req.getParameter("title"));
-        b.setContent(req.getParameter("content"));
-        String type = req.getParameter("type");
-        try {
-            service.modify(b);
-            resp.sendRedirect(req.getContextPath() + "/board/detail?boardId=" + b.getBoardId() + "&type=" + type);
-        } catch (Exception e) { throw new ServletException(e); }
+    @GetMapping("/board/detail")
+    public String legacyDetail(Integer boardId, String type) {
+        if (boardId == null) {
+            return "redirect:/boards?type=" + normalizeType(type);
+        }
+        return "redirect:/boards/" + boardId + "?type=" + normalizeType(type);
     }
 
-    private void processDelete(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
-        String loginUser = (String) req.getSession().getAttribute("loginUser");
-        if (loginUser == null) { resp.sendRedirect(req.getContextPath() + "/user/login"); return; }
-        String type = req.getParameter("type");
-        if (type == null) type = "free";
-        try {
-            service.remove(Integer.parseInt(req.getParameter("boardId")));
-            resp.sendRedirect(req.getContextPath() + "/board/list?type=" + type);
-        } catch (Exception e) { throw new ServletException(e); }
+    @GetMapping("/board/write")
+    public String legacyWrite(String type) {
+        return "redirect:/boards/new?type=" + normalizeType(type);
+    }
+
+    @GetMapping("/board/modify")
+    public String legacyModify(Integer boardId, String type) {
+        if (boardId == null) {
+            return "redirect:/boards?type=" + normalizeType(type);
+        }
+        return "redirect:/boards/" + boardId + "/edit?type=" + normalizeType(type);
+    }
+
+    @GetMapping("/board/delete")
+    public String legacyDelete() {
+        return "redirect:/boards";
+    }
+
+    private String normalizeType(String type) {
+        if ("notice".equals(type)) {
+            return "notice";
+        }
+        return "free";
     }
 }
