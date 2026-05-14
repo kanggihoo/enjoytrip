@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.enjoytrip.plan.mapper.TravelPlanMapper">
+    <select id="selectPlanById" resultType="com.enjoytrip.plan.dto.TravelPlan">
+        SELECT plan_id, user_id, title, start_date, end_date, total_budget, memo, created_at, updated_at
+        FROM travel_plan
+        WHERE plan_id = #{planId}
+    </select>
+
+    <select id="selectPlansByUserId" resultType="com.enjoytrip.plan.dto.TravelPlan">
+        SELECT plan_id, user_id, title, start_date, end_date, total_budget, memo, created_at, updated_at
+        FROM travel_plan
+        WHERE user_id = #{userId}
+        ORDER BY created_at DESC
+    </select>
+
+    <insert id="insertPlan" parameterType="com.enjoytrip.plan.dto.TravelPlan" useGeneratedKeys="true" keyProperty="planId">
+        INSERT INTO travel_plan (user_id, title, start_date, end_date, total_budget, memo)
+        VALUES (#{userId}, #{title}, #{startDate}, #{endDate}, #{totalBudget}, #{memo})
+    </insert>
+
+    <update id="updatePlan" parameterType="com.enjoytrip.plan.dto.TravelPlan">
+        UPDATE travel_plan
+        SET title = #{title},
+            start_date = #{startDate},
+            end_date = #{endDate},
+            total_budget = #{totalBudget},
+            memo = #{memo}
+        WHERE plan_id = #{planId}
+    </update>
+
+    <delete id="deletePlan">
+        DELETE FROM travel_plan WHERE plan_id = #{planId}
+    </delete>
+
+    <insert id="insertDetail" parameterType="com.enjoytrip.plan.dto.PlanDetail">
+        INSERT INTO plan_detail (plan_id, content_id, title, latitude, longitude, visit_order, visit_date, memo)
+        VALUES (#{planId}, #{contentId}, #{title}, #{latitude}, #{longitude}, #{visitOrder}, #{visitDate}, #{memo})
+    </insert>
+
+    <select id="selectDetailById" resultType="com.enjoytrip.plan.dto.PlanDetail">
+        SELECT detail_id, plan_id, content_id, title, latitude, longitude, visit_order, visit_date, memo
+        FROM plan_detail
+        WHERE detail_id = #{detailId}
+    </select>
+
+    <select id="selectDetailsByPlanId" resultType="com.enjoytrip.plan.dto.PlanDetail">
+        SELECT detail_id, plan_id, content_id, title, latitude, longitude, visit_order, visit_date, memo
+        FROM plan_detail
+        WHERE plan_id = #{planId}
+        ORDER BY visit_order ASC
+    </select>
+
+    <delete id="deleteDetailsByPlanId">
+        DELETE FROM plan_detail WHERE plan_id = #{planId}
+    </delete>
+
+    <update id="updateDetailOrder">
+        UPDATE plan_detail
+        SET visit_order = #{visitOrder}
+        WHERE detail_id = #{detailId}
+    </update>
+</mapper>

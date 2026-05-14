@@ -138,10 +138,10 @@
 
                 // 새 순서를 서버에 반영
                 list.querySelectorAll('li').forEach(function(item, newOrder) {
-                    fetch(CONTEXT + '/plan/updateOrder', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                        body: 'detailId=' + item.dataset.detailId + '&visitOrder=' + (newOrder + 1)
+                    fetch(CONTEXT + '/api/plans/details/' + item.dataset.detailId + '/order', {
+                        method: 'PATCH',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ visitOrder: newOrder + 1 })
                     });
                 });
             });
