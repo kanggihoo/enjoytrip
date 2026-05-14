@@ -60,13 +60,15 @@
     <!-- 버튼 -->
     <div style="text-align:right; margin-top:16px;">
         <c:if test="${sessionScope.loginUser eq hotplace.userId}">
-            <a href="${pageContext.request.contextPath}/hotplace/modify?hotplaceId=${hotplace.hotplaceId}"
+            <a href="${pageContext.request.contextPath}/hotplaces/${hotplace.hotplaceId}/edit"
                class="btn btn-primary">수정</a>
-            <a href="${pageContext.request.contextPath}/hotplace/delete?hotplaceId=${hotplace.hotplaceId}"
-               class="btn" style="background:#dc3545; color:#fff;"
-               onclick="return confirm('삭제하시겠습니까?')">삭제</a>
+            <form action="${pageContext.request.contextPath}/hotplaces/${hotplace.hotplaceId}/delete"
+                  method="post" style="display:inline;"
+                  onsubmit="return confirm('삭제하시겠습니까?')">
+                <button type="submit" class="btn" style="background:#dc3545; color:#fff;">삭제</button>
+            </form>
         </c:if>
-        <a href="${pageContext.request.contextPath}/hotplace/list" class="btn">목록</a>
+        <a href="${pageContext.request.contextPath}/hotplaces" class="btn">목록</a>
     </div>
 </div>
 

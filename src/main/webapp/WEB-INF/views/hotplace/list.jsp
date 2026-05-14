@@ -25,7 +25,7 @@
     <div style="display:flex; justify-content:space-between; align-items:center;">
         <h2>나만의 핫플레이스</h2>
         <c:if test="${not empty sessionScope.loginUser}">
-            <a href="${pageContext.request.contextPath}/hotplace/write" class="btn btn-primary">+ 핫플레이스 등록</a>
+            <a href="${pageContext.request.contextPath}/hotplaces/new" class="btn btn-primary">+ 핫플레이스 등록</a>
         </c:if>
     </div>
 
@@ -41,7 +41,7 @@
             <div class="hotplace-grid">
                 <c:forEach var="h" items="${hotplaces}">
                     <div class="hotplace-card">
-                        <a href="${pageContext.request.contextPath}/hotplace/detail?hotplaceId=${h.hotplaceId}">
+                        <a href="${pageContext.request.contextPath}/hotplaces/${h.hotplaceId}">
                             <c:choose>
                                 <c:when test="${not empty h.imagePath}">
                                     <img src="${pageContext.request.contextPath}/${h.imagePath}" alt="${h.title}">
@@ -53,7 +53,7 @@
                         </a>
                         <div class="info">
                             <h4>
-                                <a href="${pageContext.request.contextPath}/hotplace/detail?hotplaceId=${h.hotplaceId}"
+                                <a href="${pageContext.request.contextPath}/hotplaces/${h.hotplaceId}"
                                    style="text-decoration:none; color:#333;">${h.title}</a>
                             </h4>
                             <p class="meta">
@@ -92,7 +92,7 @@
 
             const iw = new kakao.maps.InfoWindow({
                 content: '<div style="padding:5px; font-size:13px;"><a href="' + CONTEXT +
-                         '/hotplace/detail?hotplaceId=' + p.id + '">' + p.title + '</a></div>'
+                         '/hotplaces/' + p.id + '">' + p.title + '</a></div>'
             });
             kakao.maps.event.addListener(marker, 'click', function() { iw.open(map, marker); });
         });

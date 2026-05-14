@@ -20,7 +20,7 @@
 <div class="container" style="margin-top:30px;">
     <h2>핫플레이스 수정</h2>
 
-    <form action="${pageContext.request.contextPath}/hotplace/update"
+    <form action="${pageContext.request.contextPath}/hotplaces/${hotplace.hotplaceId}"
           method="post" enctype="multipart/form-data">
 
         <input type="hidden" name="hotplaceId" value="${hotplace.hotplaceId}">
@@ -89,7 +89,7 @@
 
         <div style="text-align:center; margin-top:20px;">
             <button type="submit" class="btn btn-primary">수정 완료</button>
-            <a href="${pageContext.request.contextPath}/hotplace/detail?hotplaceId=${hotplace.hotplaceId}" class="btn">취소</a>
+            <a href="${pageContext.request.contextPath}/hotplaces/${hotplace.hotplaceId}" class="btn">취소</a>
         </div>
     </form>
 </div>

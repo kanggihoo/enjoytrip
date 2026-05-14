@@ -19,7 +19,7 @@
 <div class="container" style="margin-top:30px;">
     <h2>나만의 핫플레이스 등록</h2>
 
-    <form action="${pageContext.request.contextPath}/hotplace/regist"
+    <form action="${pageContext.request.contextPath}/hotplaces"
           method="post" enctype="multipart/form-data" id="hotplaceForm">
 
         <!-- 지도 + 검색 -->
@@ -76,7 +76,7 @@
 
         <div style="text-align:center; margin-top:20px;">
             <button type="submit" class="btn btn-primary">등록</button>
-            <a href="${pageContext.request.contextPath}/hotplace/list" class="btn">취소</a>
+            <a href="${pageContext.request.contextPath}/hotplaces" class="btn">취소</a>
         </div>
     </form>
 </div>

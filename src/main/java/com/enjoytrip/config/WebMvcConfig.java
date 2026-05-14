@@ -27,7 +27,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
                         "/plans/**",
                         "/api/plans/**",
                         "/boards/new", "/boards/*/edit", "/boards/*/delete",
-                        "/hotplaces/new", "/hotplaces/*/edit", "/hotplaces/*/delete", "/hotplaces",
+                        "/hotplaces/new", "/hotplaces/*/edit", "/hotplaces/*/delete",
                         "/members/**",
                         "/user/logout", "/user/mypage", "/user/modify", "/user/delete"
                 )
