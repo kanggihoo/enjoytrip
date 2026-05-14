@@ -1,6 +1,6 @@
 # EnjoyTrip
 
-Java MVC 기반 국내 여행 정보 공유 플랫폼입니다.  
+Spring Boot 기반 국내 여행 정보 공유 플랫폼입니다.
 공공데이터포털 관광 API와 카카오맵 API를 활용하여 관광지 조회, 여행계획 수립, 핫플레이스 공유, 게시판 기능을 제공합니다.
 
 ---
@@ -9,13 +9,13 @@ Java MVC 기반 국내 여행 정보 공유 플랫폼입니다.
 
 | 구분 | 기술 |
 |------|------|
-| Backend | Java 17, Jakarta Servlet 6 (Tomcat 11) |
+| Backend | Java 17, Spring Boot, Spring MVC |
 | Frontend | JSP, JSTL (jakarta.tags.core), HTML5, CSS3, Vanilla JS |
-| Database | MySQL 8 (Docker) |
+| Persistence | MyBatis |
+| Database | MySQL 8 (Docker Compose) |
 | Map | Kakao Maps JavaScript API |
 | 관광 데이터 | 공공데이터포털 한국관광공사 KorService2 API |
-| Build | Maven |
-| IDE | Eclipse STS |
+| Build | Maven Wrapper |
 
 ---
 
@@ -53,43 +53,37 @@ Java MVC 기반 국내 여행 정보 공유 플랫폼입니다.
 
 ```
 EnjoyTrip/
-├── src/com/enjoytrip/
+├── src/main/java/com/enjoytrip/
 │   ├── attraction/          # 관광지 (F101~103)
-│   │   ├── controller/AttractionController.java   @WebServlet("/attraction/*")
-│   │   ├── dao/             AttractionDao / AttractionDaoImpl
+│   │   ├── controller/      AttractionPageController, AttractionApiController
+│   │   ├── mapper/          AttractionMapper
 │   │   ├── service/         AttractionService / AttractionServiceImpl
 │   │   └── dto/             AttractionInfo, Sido, Gugun
 │   ├── plan/                # 여행계획 (F104)
-│   │   ├── controller/PlanController.java         @WebServlet("/plan/*")
-│   │   ├── dao/             TravelPlanDao / TravelPlanDaoImpl
+│   │   ├── controller/      PlanController, PlanApiController
+│   │   ├── mapper/          TravelPlanMapper
 │   │   ├── service/         TravelPlanService / TravelPlanServiceImpl
 │   │   └── dto/             TravelPlan, PlanDetail
 │   ├── hotplace/            # 핫플레이스 (F105)
-│   │   ├── controller/HotplaceController.java     @WebServlet("/hotplace/*")
-│   │   ├── dao/             HotplaceDao / HotplaceDaoImpl
+│   │   ├── controller/      HotplaceController
+│   │   ├── mapper/          HotplaceMapper
 │   │   ├── service/         HotplaceService / HotplaceServiceImpl
 │   │   └── dto/             Hotplace
 │   ├── board/               # 게시판 (F106)
-│   │   ├── controller/BoardController.java        @WebServlet("/board/*")
-│   │   ├── dao/             BoardDao / BoardDaoImpl
+│   │   ├── controller/      BoardController
+│   │   ├── mapper/          BoardMapper
 │   │   ├── service/         BoardService / BoardServiceImpl
 │   │   └── dto/             Board
 │   ├── member/              # 회원관리 (F107~108)
-│   │   ├── controller/MemberController.java       @WebServlet("/user/*")
-│   │   ├── dao/             MemberDao / MemberDaoImpl
+│   │   ├── controller/      MemberController
+│   │   ├── mapper/          MemberMapper
 │   │   ├── service/         MemberService / MemberServiceImpl
 │   │   └── dto/             Member
-│   └── util/DBUtil.java
-│
-├── WebContent/
-│   └── WEB-INF/views/
-│       ├── common/          header.jsp, footer.jsp
-│       ├── attraction/      list.jsp, detail.jsp
-│       ├── plan/            list.jsp, write.jsp, detail.jsp, modify.jsp
-│       ├── hotplace/        list.jsp, write.jsp, detail.jsp, modify.jsp
-│       ├── board/           list.jsp, write.jsp, detail.jsp, modify.jsp
-│       └── member/          login.jsp, join.jsp, mypage.jsp, modify.jsp
-│
+│   └── config/
+├── src/main/resources/
+│   └── mappers/             MyBatis mapper XML
+├── src/main/webapp/
+│   └── WEB-INF/views/       JSP views
 └── sql/schema.sql
 ```
 
@@ -112,35 +106,11 @@ EnjoyTrip/
 
 ## 환경 설정 및 실행
 
-### 1. Docker Compose 실행 (MySQL DB 및 스키마 적용)
-
-```bash
-docker-compose up -d
-```
-> `docker-compose.yml`에 의해 **3305 포트**로 MySQL이 실행되며, `sql/schema.sql` 스키마가 자동으로 적용됩니다.
-
-### 2. MySQL CLI 접속 (선택 사항)
-
-실행 중인 MySQL 컨테이너에 직접 접속하려면 다음 명령어를 사용하세요.
-```bash
-docker compose exec mysql mysql -ussafy -pssafy --default-character-set=utf8mb4 enjoytrip
-```
-
-### 3. DBUtil 설정 확인
-
-[DBUtil.java](src/com/enjoytrip/util/DBUtil.java) — JDBC URL / 계정 확인
-
-```
-URL  : jdbc:mysql://localhost:3305/enjoytrip?serverTimezone=UTC&useUniCode=yes&characterEncoding=UTF-8
-User : ssafy
-Pass : ssafy
-```
-
-### 4. STS / Eclipse 실행
-
-1. Maven Update Project (`Alt+F5`)
-2. Tomcat 11 서버에 프로젝트 추가
-3. Start Server → `http://localhost:8080/EnjoyTrip/`
+1. docker compose up -d
+2. cp .env.example .env
+3. edit .env with API keys
+4. ./mvnw spring-boot:run
+5. open http://localhost:8080/
 
 ---
 
@@ -149,15 +119,15 @@ Pass : ssafy
 | 서비스 | 키 위치 |
 |--------|---------|
 | 카카오맵 | `header.jsp` / `write.jsp` 내 `appkey` |
-| 공공데이터포털 | `web.xml` 내 `kakaoJavascriptKey` |
+| 공공데이터포털 | `.env` |
 
 ---
 
 ## 주요 설계 포인트
 
-- **CORS 우회**: 브라우저에서 `apis.data.go.kr`를 직접 호출하면 CORS 에러 발생  
-  → `AttractionController`가 Java `HttpURLConnection`으로 프록시 처리  
-  → 프론트엔드는 `/attraction/api/sido`, `/attraction/api/gugun`, `/attraction/api/search` 호출
+- **CORS 우회**: 브라우저에서 `apis.data.go.kr`를 직접 호출하면 CORS 에러 발생
+  → `AttractionApiController`가 서버 사이드 프록시 처리
+  → 프론트엔드는 `/api/attractions/sidos`, `/api/attractions/guguns`, `/api/attractions/search` 호출
 
 - **JSP EL 충돌 방지**: JavaScript 내 `${변수}` 사용 금지 (JSP EL로 파싱됨)  
   → 모든 동적 HTML 생성은 `var x = '...' + variable` 문자열 연결 방식 사용

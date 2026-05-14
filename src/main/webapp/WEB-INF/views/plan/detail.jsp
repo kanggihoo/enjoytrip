@@ -66,11 +66,11 @@
 
     <div style="text-align:right; margin-top:15px;">
         <c:if test="${sessionScope.loginUser eq plan.userId}">
-            <a href="${pageContext.request.contextPath}/plan/modify?planId=${plan.planId}" class="btn btn-primary">수정</a>
+            <a href="${pageContext.request.contextPath}/plans/${plan.planId}/edit" class="btn btn-primary">수정</a>
             <a href="${pageContext.request.contextPath}/plan/delete?planId=${plan.planId}"
                class="btn" onclick="return confirm('삭제하시겠습니까?')" style="background:#dc3545; color:#fff;">삭제</a>
         </c:if>
-        <a href="${pageContext.request.contextPath}/plan/list" class="btn">목록</a>
+        <a href="${pageContext.request.contextPath}/plans" class="btn">목록</a>
     </div>
 </div>
 

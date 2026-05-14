@@ -38,7 +38,7 @@
                 <textarea name="content" placeholder="내용을 입력하세요" required></textarea>
             </div>
             <div class="btn-row">
-                <a href="${pageContext.request.contextPath}/board/list?type=${type}" class="btn btn-secondary">취소</a>
+                <a href="${pageContext.request.contextPath}/boards?type=${type}" class="btn btn-secondary">취소</a>
                 <button type="submit" class="btn btn-primary">등록</button>
             </div>
         </form>

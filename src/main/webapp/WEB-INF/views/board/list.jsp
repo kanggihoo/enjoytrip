@@ -34,16 +34,16 @@
 <jsp:include page="/WEB-INF/views/common/header.jsp"/>
 <div class="container">
     <div class="tab-bar">
-        <a href="${pageContext.request.contextPath}/board/list?type=notice"
+        <a href="${pageContext.request.contextPath}/boards?type=notice"
            class="tab ${type=='notice' ? 'active' : ''}">공지사항</a>
-        <a href="${pageContext.request.contextPath}/board/list?type=free"
+        <a href="${pageContext.request.contextPath}/boards?type=free"
            class="tab ${type=='free' ? 'active' : ''}">자유게시판</a>
     </div>
 
     <div class="page-header">
         <h2><c:choose><c:when test="${type=='notice'}">공지사항</c:when><c:otherwise>자유게시판</c:otherwise></c:choose></h2>
         <c:if test="${not empty sessionScope.loginUser}">
-            <a href="${pageContext.request.contextPath}/board/write?type=${type}" class="btn-write">글쓰기</a>
+            <a href="${pageContext.request.contextPath}/boards/new?type=${type}" class="btn-write">글쓰기</a>
         </c:if>
     </div>
 
@@ -69,7 +69,7 @@
                             <td>
                                 <c:if test="${type=='notice'}"><span class="notice-badge">공지</span></c:if>
                                 <a class="title-link"
-                                   href="${pageContext.request.contextPath}/board/detail?boardId=${b.boardId}&type=${type}">
+                                   href="${pageContext.request.contextPath}/boards/${b.boardId}?type=${type}">
                                     ${b.title}
                                 </a>
                             </td>

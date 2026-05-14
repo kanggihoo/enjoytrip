@@ -126,7 +126,7 @@
 <div class="hero">
     <h1>EnjoyTrip</h1>
     <p>대한민국 구석구석, 즐거운 여행을 계획해보세요.</p>
-    <a href="${pageContext.request.contextPath}/attraction/list" class="hero-btn">관광지 둘러보기</a>
+    <a href="${pageContext.request.contextPath}/attractions" class="hero-btn">관광지 둘러보기</a>
 </div>
 
 <div class="features">
@@ -139,19 +139,19 @@
 
     <h2>EnjoyTrip 서비스</h2>
     <div class="cards">
-        <a href="${pageContext.request.contextPath}/attraction/list" class="feat-card">
+        <a href="${pageContext.request.contextPath}/attractions" class="feat-card">
             <div class="feat-icon">&#127981;</div>
             <h3>지역별 관광지</h3>
             <p>시/도, 구/군별로 관광지를 검색하고 지도에서 위치를 확인하세요.</p>
         </a>
 
-        <a href="${pageContext.request.contextPath}/plan/list" class="feat-card">
+        <a href="${pageContext.request.contextPath}/plans" class="feat-card">
             <div class="feat-icon">&#128204;</div>
             <h3>나의 여행계획</h3>
             <p>방문할 관광지를 선택하고 나만의 여행 루트를 만들어보세요.</p>
         </a>
 
-        <a href="${pageContext.request.contextPath}/hotplace/list" class="feat-card">
+        <a href="${pageContext.request.contextPath}/hotplaces" class="feat-card">
             <div class="feat-icon">&#128293;</div>
             <h3>핫플레이스</h3>
             <p>직접 방문한 장소를 사진과 함께 다른 사람과 공유해보세요.</p>

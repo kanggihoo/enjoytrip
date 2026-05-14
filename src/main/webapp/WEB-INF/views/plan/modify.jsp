@@ -12,7 +12,7 @@
 <div class="container" style="margin-top:30px;">
     <h2>여행계획 수정</h2>
 
-    <form action="${pageContext.request.contextPath}/plan/update" method="post">
+    <form action="${pageContext.request.contextPath}/plans/${plan.planId}" method="post">
         <input type="hidden" name="planId" value="${plan.planId}">
         <table class="form-table">
             <tr>
@@ -39,7 +39,7 @@
 
         <div style="text-align:center; margin-top:20px;">
             <button type="submit" class="btn btn-primary">수정 완료</button>
-            <a href="${pageContext.request.contextPath}/plan/detail?planId=${plan.planId}" class="btn">취소</a>
+            <a href="${pageContext.request.contextPath}/plans/${plan.planId}" class="btn">취소</a>
         </div>
     </form>
 </div>

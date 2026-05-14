@@ -83,7 +83,7 @@
     <h2>여행계획 등록</h2>
 
     <!-- 계획 기본 정보 폼 -->
-    <form action="${pageContext.request.contextPath}/plan/regist" method="post" id="planForm">
+    <form action="${pageContext.request.contextPath}/plans" method="post" id="planForm">
         <div class="plan-form">
             <table>
                 <tr>
@@ -140,7 +140,7 @@
 
         <div class="btn-row">
             <button type="submit" class="btn btn-primary" onclick="prepareSubmit()">등록</button>
-            <a href="${pageContext.request.contextPath}/plan/list" class="btn btn-secondary">취소</a>
+            <a href="${pageContext.request.contextPath}/plans" class="btn btn-secondary">취소</a>
         </div>
     </form>
 </div>

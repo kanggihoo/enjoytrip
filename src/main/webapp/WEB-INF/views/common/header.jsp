@@ -6,11 +6,11 @@
            style="font-size:22px; font-weight:bold; color:#fff; text-decoration:none; margin-right:auto;">
             EnjoyTrip
         </a>
-        <a href="${pageContext.request.contextPath}/attraction/list" class="nav-link">지역별관광지</a>
-        <a href="${pageContext.request.contextPath}/plan/list"       class="nav-link">나의여행계획</a>
-        <a href="${pageContext.request.contextPath}/hotplace/list"   class="nav-link">핫플레이스</a>
-        <a href="${pageContext.request.contextPath}/board/list?type=notice" class="nav-link">공지사항</a>
-        <a href="${pageContext.request.contextPath}/board/list?type=free"   class="nav-link">자유게시판</a>
+        <a href="${pageContext.request.contextPath}/attractions" class="nav-link">지역별관광지</a>
+        <a href="${pageContext.request.contextPath}/plans"       class="nav-link">나의여행계획</a>
+        <a href="${pageContext.request.contextPath}/hotplaces"   class="nav-link">핫플레이스</a>
+        <a href="${pageContext.request.contextPath}/boards?type=notice" class="nav-link">공지사항</a>
+        <a href="${pageContext.request.contextPath}/boards?type=free"   class="nav-link">자유게시판</a>
 
         <c:choose>
             <c:when test="${not empty sessionScope.loginUser}">

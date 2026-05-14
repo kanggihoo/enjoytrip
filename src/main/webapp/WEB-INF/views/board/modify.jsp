@@ -39,7 +39,7 @@
                 <textarea name="content" required>${board.content}</textarea>
             </div>
             <div class="btn-row">
-                <a href="${pageContext.request.contextPath}/board/detail?boardId=${board.boardId}&type=${type}" class="btn btn-secondary">취소</a>
+                <a href="${pageContext.request.contextPath}/boards/${board.boardId}?type=${type}" class="btn btn-secondary">취소</a>
                 <button type="submit" class="btn btn-primary">저장</button>
             </div>
         </form>

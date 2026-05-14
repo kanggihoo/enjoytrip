@@ -35,10 +35,10 @@
         </div>
         <div class="post-content">${board.content}</div>
         <div class="btn-row">
-            <a href="${pageContext.request.contextPath}/board/list?type=${type}" class="btn btn-secondary">&larr; 목록</a>
+            <a href="${pageContext.request.contextPath}/boards?type=${type}" class="btn btn-secondary">&larr; 목록</a>
             <c:if test="${sessionScope.loginUser == board.userId}">
                 <div style="display:flex; gap:8px;">
-                    <a href="${pageContext.request.contextPath}/board/modify?boardId=${board.boardId}&type=${type}" class="btn btn-edit">수정</a>
+                    <a href="${pageContext.request.contextPath}/boards/${board.boardId}/edit?type=${type}" class="btn btn-edit">수정</a>
                     <form method="post" action="${pageContext.request.contextPath}/boards/${board.boardId}/delete"
                           style="margin:0;"
                           onsubmit="return confirm('삭제하시겠습니까?')">

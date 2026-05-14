@@ -14,7 +14,7 @@
     <h2>나의 여행계획</h2>
 
     <div style="text-align:right; margin-bottom:12px;">
-        <a class="btn btn-primary" href="${pageContext.request.contextPath}/plan/write">+ 새 계획 만들기</a>
+        <a class="btn btn-primary" href="${pageContext.request.contextPath}/plans/new">+ 새 계획 만들기</a>
     </div>
 
     <c:choose>
@@ -39,7 +39,7 @@
                         <tr>
                             <td>${status.count}</td>
                             <td>
-                                <a href="${pageContext.request.contextPath}/plan/detail?planId=${plan.planId}">
+                                <a href="${pageContext.request.contextPath}/plans/${plan.planId}">
                                     ${plan.title}
                                 </a>
                             </td>
@@ -48,7 +48,7 @@
                             <td>${plan.totalBudget}</td>
                             <td>${plan.createdAt}</td>
                             <td>
-                                <a href="${pageContext.request.contextPath}/plan/modify?planId=${plan.planId}">수정</a>
+                                <a href="${pageContext.request.contextPath}/plans/${plan.planId}/edit">수정</a>
                                 &nbsp;|&nbsp;
                                 <a href="${pageContext.request.contextPath}/plan/delete?planId=${plan.planId}"
                                    onclick="return confirm('삭제하시겠습니까?')">삭제</a>

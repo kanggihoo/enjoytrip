@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.List;
@@ -28,7 +29,7 @@ public class PlanController {
         this.objectMapper = objectMapper;
     }
 
-    @GetMapping("/plan/list")
+    @GetMapping({"/plans", "/plan/list"})
     public String list(HttpSession session, Model model) {
         String userId = (String) session.getAttribute("loginUser");
         if (userId == null) {
@@ -38,7 +39,7 @@ public class PlanController {
         return "plan/list";
     }
 
-    @GetMapping("/plan/write")
+    @GetMapping({"/plans/new", "/plan/write"})
     public String writeForm(HttpSession session) {
         if (session.getAttribute("loginUser") == null) {
             return "redirect:/user/login";
@@ -46,7 +47,7 @@ public class PlanController {
         return "plan/write";
     }
 
-    @PostMapping("/plan/regist")
+    @PostMapping({"/plans", "/plan/regist"})
     public String regist(@ModelAttribute TravelPlan plan, String detailsJson, HttpSession session) throws Exception {
         String userId = (String) session.getAttribute("loginUser");
         if (userId == null) {
@@ -55,7 +56,7 @@ public class PlanController {
         List<PlanDetail> details = parseDetails(detailsJson);
         int newPlanId = travelPlanService.createPlanWithDetails(plan, details, userId);
 
-        return "redirect:/plan/detail?planId=" + newPlanId;
+        return "redirect:/plans/" + newPlanId;
     }
 
     private List<PlanDetail> parseDetails(String detailsJson) {
@@ -79,6 +80,11 @@ public class PlanController {
         return "plan/detail";
     }
 
+    @GetMapping("/plans/{planId}")
+    public String canonicalDetail(@PathVariable int planId, Model model) {
+        return detail(planId, model);
+    }
+
     @GetMapping("/plan/modify")
     public String modifyForm(int planId, HttpSession session, Model model) {
         if (session.getAttribute("loginUser") == null) {
@@ -88,6 +94,11 @@ public class PlanController {
         return "plan/modify";
     }
 
+    @GetMapping("/plans/{planId}/edit")
+    public String canonicalModifyForm(@PathVariable int planId, HttpSession session, Model model) {
+        return modifyForm(planId, session, model);
+    }
+
     @PostMapping("/plan/update")
     public String update(@ModelAttribute TravelPlan plan, HttpSession session) {
         String userId = (String) session.getAttribute("loginUser");
@@ -95,7 +106,13 @@ public class PlanController {
             return "redirect:/user/login";
         }
         travelPlanService.modifyPlan(plan, userId);
-        return "redirect:/plan/detail?planId=" + plan.getPlanId();
+        return "redirect:/plans/" + plan.getPlanId();
+    }
+
+    @PostMapping("/plans/{planId}")
+    public String canonicalUpdate(@PathVariable int planId, @ModelAttribute TravelPlan plan, HttpSession session) {
+        plan.setPlanId(planId);
+        return update(plan, session);
     }
 
     @GetMapping("/plan/delete")
@@ -105,7 +122,7 @@ public class PlanController {
             return "redirect:/user/login";
         }
         travelPlanService.removePlan(planId, userId);
-        return "redirect:/plan/list";
+        return "redirect:/plans";
     }
 
     @PostMapping("/plan/addDetail")
@@ -115,6 +132,6 @@ public class PlanController {
             return "redirect:/user/login";
         }
         travelPlanService.addDetail(detail, userId);
-        return "redirect:/plan/detail?planId=" + detail.getPlanId();
+        return "redirect:/plans/" + detail.getPlanId();
     }
 }

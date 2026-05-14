@@ -42,7 +42,7 @@
     </div>
     <div class="btn-group">
         <a href="${pageContext.request.contextPath}/user/modify" class="btn btn-primary">정보 수정</a>
-        <a href="${pageContext.request.contextPath}/plan/list" class="btn btn-primary">내 여행계획</a>
+        <a href="${pageContext.request.contextPath}/plans" class="btn btn-primary">내 여행계획</a>
         <button class="btn btn-danger" onclick="confirmDelete()">회원 탈퇴</button>
     </div>
 </div>
