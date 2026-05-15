@@ -1,0 +1,559 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EnjoyTrip v2 Use Case Diagram</title>
+  <style>
+    :root {
+      --ink: #17202a;
+      --muted: #64748b;
+      --line: #cbd5e1;
+      --paper: #f6f8fb;
+      --panel: #ffffff;
+      --blue: #2563eb;
+      --green: #059669;
+      --violet: #7c3aed;
+      --orange: #ea580c;
+      --red: #dc2626;
+      --admin: #7c2d12;
+      --user: #1e3a8a;
+      --shadow: 0 18px 45px rgba(15, 23, 42, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "Noto Sans KR", Arial, sans-serif;
+      color: var(--ink);
+      background:
+        linear-gradient(180deg, rgba(37, 99, 235, 0.08), rgba(124, 58, 237, 0.06) 42%, transparent 72%),
+        var(--paper);
+    }
+
+    .page {
+      max-width: 1560px;
+      margin: 0 auto;
+      padding: 36px 28px 52px;
+    }
+
+    .header,
+    .diagram,
+    .legend,
+    .notes {
+      background: rgba(255, 255, 255, 0.94);
+      border: 1px solid #d7dee8;
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .header {
+      padding: 28px 32px;
+      margin-bottom: 22px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #e0f2fe;
+      color: #075985;
+      font-size: 13px;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(30px, 4vw, 50px);
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      margin: 0;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.65;
+      max-width: 900px;
+    }
+
+    .scope-pill {
+      border: 1px solid #fed7aa;
+      background: #fff7ed;
+      color: #9a3412;
+      border-radius: 8px;
+      padding: 14px 16px;
+      font-weight: 800;
+      text-align: center;
+      min-width: 150px;
+    }
+
+    .diagram {
+      position: relative;
+      min-height: 1050px;
+      padding: 26px;
+      overflow: auto;
+    }
+
+    .canvas {
+      position: relative;
+      width: 1450px;
+      height: 980px;
+      margin: 0 auto;
+    }
+
+    .system {
+      position: absolute;
+      left: 220px;
+      top: 28px;
+      width: 1010px;
+      height: 910px;
+      border: 3px solid #334155;
+      border-radius: 12px;
+      background:
+        linear-gradient(180deg, rgba(248, 250, 252, 0.96), rgba(255, 255, 255, 0.96));
+      box-shadow: inset 0 0 0 1px rgba(203, 213, 225, 0.8);
+      z-index: 1;
+    }
+
+    .system-title {
+      position: absolute;
+      left: 250px;
+      top: 8px;
+      background: #fff;
+      padding: 6px 12px;
+      color: #334155;
+      font-size: 14px;
+      font-weight: 900;
+      border: 1px solid #cbd5e1;
+      border-radius: 999px;
+      z-index: 5;
+    }
+
+    .actor {
+      position: absolute;
+      width: 140px;
+      min-height: 170px;
+      z-index: 4;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      text-align: center;
+    }
+
+    .actor.user {
+      left: 34px;
+      top: 310px;
+      color: var(--user);
+    }
+
+    .actor.admin {
+      right: 34px;
+      top: 365px;
+      color: var(--admin);
+    }
+
+    .person-icon {
+      width: 82px;
+      height: 118px;
+    }
+
+    .actor-name {
+      font-size: 18px;
+      font-weight: 900;
+      color: currentColor;
+    }
+
+    .actor-role {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+      max-width: 132px;
+    }
+
+    .group {
+      position: absolute;
+      border: 1px solid #dbe3ee;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.78);
+      padding: 44px 18px 18px;
+      z-index: 2;
+    }
+
+    .group-title {
+      position: absolute;
+      left: 16px;
+      top: 12px;
+      font-weight: 900;
+      font-size: 15px;
+      color: #334155;
+    }
+
+    .group.auth { left: 260px; top: 78px; width: 300px; height: 230px; border-top: 6px solid var(--blue); }
+    .group.attraction { left: 590px; top: 78px; width: 300px; height: 230px; border-top: 6px solid var(--green); }
+    .group.plan { left: 260px; top: 340px; width: 410px; height: 285px; border-top: 6px solid var(--violet); }
+    .group.hotplace { left: 700px; top: 340px; width: 300px; height: 285px; border-top: 6px solid var(--orange); }
+    .group.board { left: 260px; top: 660px; width: 345px; height: 220px; border-top: 6px solid #0f766e; }
+    .group.admin-area { left: 635px; top: 660px; width: 365px; height: 220px; border-top: 6px solid var(--red); }
+
+    .usecase {
+      position: absolute;
+      min-width: 104px;
+      height: 44px;
+      padding: 0 14px;
+      border: 2px solid #64748b;
+      border-radius: 999px;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.18;
+      z-index: 4;
+      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+      white-space: nowrap;
+    }
+
+    .usecase.blue { border-color: var(--blue); color: #1e40af; }
+    .usecase.green { border-color: var(--green); color: #065f46; }
+    .usecase.violet { border-color: var(--violet); color: #4c1d95; }
+    .usecase.orange { border-color: var(--orange); color: #9a3412; }
+    .usecase.teal { border-color: #0f766e; color: #115e59; }
+    .usecase.red { border-color: var(--red); color: #991b1b; }
+    .usecase.gray { border-color: #475569; color: #334155; background: #f8fafc; }
+
+    .relation-label {
+      position: absolute;
+      z-index: 6;
+      padding: 3px 7px;
+      border-radius: 999px;
+      background: #fff;
+      border: 1px solid #cbd5e1;
+      color: #334155;
+      font-size: 11px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    svg.lines {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1450px;
+      height: 980px;
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    .assoc {
+      stroke: #64748b;
+      stroke-width: 2.1;
+      fill: none;
+    }
+
+    .include {
+      stroke: #2563eb;
+      stroke-width: 1.8;
+      stroke-dasharray: 7 6;
+      fill: none;
+    }
+
+    .extend {
+      stroke: #ea580c;
+      stroke-width: 1.8;
+      stroke-dasharray: 3 6;
+      fill: none;
+    }
+
+    .admin-line {
+      stroke: #dc2626;
+      stroke-width: 2.1;
+      fill: none;
+    }
+
+    .legend {
+      margin-top: 22px;
+      padding: 18px 22px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px 22px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+    }
+
+    .sample {
+      width: 38px;
+      height: 0;
+      border-top: 3px solid #64748b;
+    }
+
+    .sample.include {
+      border-top: 3px dashed var(--blue);
+      width: 44px;
+    }
+
+    .sample.extend {
+      border-top: 3px dotted var(--orange);
+      width: 44px;
+    }
+
+    .sample.admin {
+      border-top: 3px solid var(--red);
+    }
+
+    .notes {
+      margin-top: 22px;
+      padding: 24px;
+    }
+
+    .notes h2 {
+      margin: 0 0 14px;
+      font-size: 22px;
+    }
+
+    .notes-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .note {
+      border: 1px solid #dbe3ee;
+      border-radius: 8px;
+      padding: 14px;
+      background: #fbfdff;
+    }
+
+    .note strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .note p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    @media (max-width: 900px) {
+      .header {
+        grid-template-columns: 1fr;
+      }
+
+      .diagram {
+        padding: 14px;
+      }
+
+      .notes-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media print {
+      body {
+        background: #fff;
+      }
+
+      .page {
+        max-width: none;
+        padding: 10px;
+      }
+
+      .header,
+      .diagram,
+      .legend,
+      .notes {
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="header">
+      <div>
+        <div class="eyebrow">Use Case Diagram</div>
+        <h1>EnjoyTrip v2 시스템 사용 사례</h1>
+        <p class="lead">
+          일반 사용자와 Admin을 기준으로 회원, 관광지, 여행계획, Hotplace, 게시판/공지사항, 날씨 기능을
+          System Boundary 안에 배치했습니다. `<<include>>`, `<<extend>>` 관계는 선 스타일과 라벨로 구분합니다.
+        </p>
+      </div>
+      <div class="scope-pill">F06 뉴스 크롤링 제외</div>
+    </header>
+
+    <section class="diagram" aria-label="EnjoyTrip v2 Use Case Diagram">
+      <div class="canvas">
+        <div class="system"></div>
+        <div class="system-title">&lt;&lt;SystemBoundary&gt;&gt; EnjoyTrip v2</div>
+
+        <div class="actor user">
+          <svg class="person-icon" viewBox="0 0 100 140" aria-hidden="true">
+            <circle cx="50" cy="24" r="18" fill="none" stroke="currentColor" stroke-width="6"></circle>
+            <line x1="50" y1="44" x2="50" y2="88" stroke="currentColor" stroke-width="7" stroke-linecap="round"></line>
+            <line x1="24" y1="62" x2="76" y2="62" stroke="currentColor" stroke-width="7" stroke-linecap="round"></line>
+            <line x1="50" y1="88" x2="25" y2="124" stroke="currentColor" stroke-width="7" stroke-linecap="round"></line>
+            <line x1="50" y1="88" x2="75" y2="124" stroke="currentColor" stroke-width="7" stroke-linecap="round"></line>
+          </svg>
+          <div class="actor-name">일반 사용자</div>
+          <div class="actor-role">여행 정보를 찾고 계획과 후기를 관리</div>
+        </div>
+
+        <div class="actor admin">
+          <svg class="person-icon" viewBox="0 0 100 140" aria-hidden="true">
+            <circle cx="50" cy="24" r="18" fill="none" stroke="currentColor" stroke-width="6"></circle>
+            <line x1="50" y1="44" x2="50" y2="88" stroke="currentColor" stroke-width="7" stroke-linecap="round"></line>
+            <line x1="24" y1="62" x2="76" y2="62" stroke="currentColor" stroke-width="7" stroke-linecap="round"></line>
+            <line x1="50" y1="88" x2="25" y2="124" stroke="currentColor" stroke-width="7" stroke-linecap="round"></line>
+            <line x1="50" y1="88" x2="75" y2="124" stroke="currentColor" stroke-width="7" stroke-linecap="round"></line>
+          </svg>
+          <div class="actor-name">Admin</div>
+          <div class="actor-role">공지사항과 게시글을 관리</div>
+        </div>
+
+        <div class="group auth"><div class="group-title">회원/인증</div></div>
+        <div class="group attraction"><div class="group-title">관광지</div></div>
+        <div class="group plan"><div class="group-title">여행계획</div></div>
+        <div class="group hotplace"><div class="group-title">Hotplace</div></div>
+        <div class="group board"><div class="group-title">공유게시판</div></div>
+        <div class="group admin-area"><div class="group-title">공지사항/Admin</div></div>
+
+        <div id="uc-join" class="usecase blue" style="left: 285px; top: 140px;">회원가입</div>
+        <div id="uc-login" class="usecase blue" style="left: 408px; top: 112px;">로그인</div>
+        <div id="uc-logout" class="usecase blue" style="left: 410px; top: 170px;">로그아웃</div>
+        <div id="uc-profile" class="usecase blue" style="left: 298px; top: 216px;">회원정보 관리</div>
+        <div id="uc-password" class="usecase blue" style="left: 418px; top: 232px;">비밀번호 찾기</div>
+
+        <div id="uc-attraction-search" class="usecase green" style="left: 616px; top: 122px;">지역별 관광지 조회</div>
+        <div id="uc-content-search" class="usecase green" style="left: 746px; top: 182px;">컨텐츠별 조회</div>
+        <div id="uc-attraction-detail" class="usecase green" style="left: 612px; top: 232px;">관광지 상세 보기</div>
+        <div id="uc-map" class="usecase green" style="left: 760px; top: 112px;">지도에서 확인</div>
+
+        <div id="uc-plan-crud" class="usecase violet" style="left: 294px; top: 406px;">여행계획 관리</div>
+        <div id="uc-add-plan" class="usecase violet" style="left: 472px; top: 392px;">관광지 일정 추가</div>
+        <div id="uc-plan-route" class="usecase violet" style="left: 292px; top: 486px;">여행 경로 보기</div>
+        <div id="uc-plan-order" class="usecase violet" style="left: 488px; top: 478px;">방문 순서 변경</div>
+        <div id="uc-weather" class="usecase violet" style="left: 376px; top: 554px;">여행 기간 날씨 보기</div>
+        <div id="uc-membership" class="usecase violet" style="left: 452px; top: 548px;">포함 여부 확인</div>
+
+        <div id="uc-hotplace-crud" class="usecase orange" style="left: 730px; top: 404px;">Hotplace 관리</div>
+        <div id="uc-upload" class="usecase orange" style="left: 858px; top: 392px;">사진 업로드</div>
+        <div id="uc-coordinate" class="usecase orange" style="left: 858px; top: 462px;">지도 좌표 선택</div>
+        <div id="uc-hotplace-review" class="usecase orange" style="left: 738px; top: 540px;">Hotplace 후기 보기</div>
+
+        <div id="uc-board-view" class="usecase teal" style="left: 292px; top: 728px;">게시글 조회</div>
+        <div id="uc-board-write" class="usecase teal" style="left: 438px; top: 704px;">게시글 등록</div>
+        <div id="uc-board-edit" class="usecase teal" style="left: 438px; top: 766px;">게시글 수정/삭제</div>
+
+        <div id="uc-notice-view" class="usecase red" style="left: 666px; top: 704px;">공지사항 조회</div>
+        <div id="uc-notice-manage" class="usecase red" style="left: 808px; top: 736px;">공지사항 관리</div>
+        <div id="uc-admin-board" class="usecase red" style="left: 668px; top: 800px;">게시글 관리</div>
+
+        <div id="uc-auth-check" class="usecase gray" style="left: 1050px; top: 185px;">인증 상태 확인</div>
+        <div id="uc-owner-check" class="usecase gray" style="left: 1050px; top: 475px;">작성자 권한 확인</div>
+        <div id="uc-admin-check" class="usecase gray" style="left: 1050px; top: 740px;">관리자 권한 확인</div>
+
+        <div class="relation-label" style="left: 690px; top: 160px;">&lt;&lt;include&gt;&gt;</div>
+        <div class="relation-label" style="left: 710px; top: 260px;">&lt;&lt;include&gt;&gt;</div>
+        <div class="relation-label" style="left: 448px; top: 515px;">&lt;&lt;extend&gt;&gt;</div>
+        <div class="relation-label" style="left: 558px; top: 342px;">&lt;&lt;extend&gt;&gt;</div>
+        <div class="relation-label" style="left: 797px; top: 500px;">&lt;&lt;extend&gt;&gt;</div>
+        <div class="relation-label" style="left: 908px; top: 420px;">&lt;&lt;include&gt;&gt;</div>
+        <div class="relation-label" style="left: 915px; top: 682px;">&lt;&lt;include&gt;&gt;</div>
+
+        <svg class="lines" viewBox="0 0 1450 980" aria-hidden="true">
+          <defs>
+            <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#2563eb"></path>
+            </marker>
+            <marker id="arrow-orange" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#ea580c"></path>
+            </marker>
+          </defs>
+
+          <path class="assoc" d="M155 385 C205 320, 235 245, 286 163"></path>
+          <path class="assoc" d="M155 390 C220 365, 250 418, 294 428"></path>
+          <path class="assoc" d="M155 405 C245 360, 520 160, 616 145"></path>
+          <path class="assoc" d="M155 420 C250 450, 650 422, 730 426"></path>
+          <path class="assoc" d="M155 435 C220 600, 245 730, 292 750"></path>
+          <path class="assoc" d="M155 450 C250 670, 330 560, 376 576"></path>
+
+          <path class="admin-line" d="M1295 430 C1240 410, 1160 224, 1160 205"></path>
+          <path class="admin-line" d="M1295 455 C1190 570, 965 760, 914 758"></path>
+          <path class="admin-line" d="M1295 470 C1190 610, 870 818, 776 822"></path>
+          <path class="admin-line" d="M1295 486 C1180 600, 735 728, 771 726"></path>
+
+          <path class="include" marker-end="url(#arrow)" d="M764 204 C735 184, 708 164, 690 144"></path>
+          <path class="include" marker-end="url(#arrow)" d="M685 254 C740 228, 770 170, 810 134"></path>
+
+          <path class="include" marker-end="url(#arrow)" d="M576 414 C770 360, 990 225, 1050 205"></path>
+          <path class="include" marker-end="url(#arrow)" d="M574 500 C790 468, 980 486, 1050 497"></path>
+          <path class="extend" marker-end="url(#arrow-orange)" d="M454 576 C430 560, 405 540, 380 509"></path>
+          <path class="extend" marker-end="url(#arrow-orange)" d="M515 570 C575 445, 610 275, 640 253"></path>
+
+          <path class="include" marker-end="url(#arrow)" d="M842 426 C872 426, 890 416, 905 414"></path>
+          <path class="include" marker-end="url(#arrow)" d="M842 426 C878 440, 888 474, 905 484"></path>
+          <path class="include" marker-end="url(#arrow)" d="M805 426 C930 355, 1040 230, 1084 207"></path>
+          <path class="extend" marker-end="url(#arrow-orange)" d="M817 562 C760 500, 710 315, 681 254"></path>
+
+          <path class="include" marker-end="url(#arrow)" d="M506 726 C740 692, 985 515, 1050 497"></path>
+          <path class="include" marker-end="url(#arrow)" d="M522 788 C765 756, 1000 526, 1050 497"></path>
+          <path class="include" marker-end="url(#arrow)" d="M898 758 C980 740, 1022 750, 1050 760"></path>
+          <path class="include" marker-end="url(#arrow)" d="M760 822 C910 800, 1010 770, 1050 760"></path>
+        </svg>
+      </div>
+    </section>
+
+    <section class="legend">
+      <span class="legend-item"><span class="sample"></span>Actor 연결</span>
+      <span class="legend-item"><span class="sample admin"></span>Admin 연결</span>
+      <span class="legend-item"><span class="sample include"></span>&lt;&lt;include&gt;&gt; 필수 하위 기능</span>
+      <span class="legend-item"><span class="sample extend"></span>&lt;&lt;extend&gt;&gt; 조건부 확장 기능</span>
+    </section>
+
+    <section class="notes">
+      <h2>Diagram Notes</h2>
+      <div class="notes-grid">
+        <div class="note">
+          <strong>공개 기능</strong>
+          <p>관광지 조회, 관광지 상세, Hotplace 조회, 게시글 조회, 공지사항 조회는 비로그인 상태에서도 접근 가능합니다.</p>
+        </div>
+        <div class="note">
+          <strong>인증 필요</strong>
+          <p>여행계획, Hotplace 등록/수정/삭제, 게시글 등록/수정/삭제는 로그인 상태 확인을 포함합니다.</p>
+        </div>
+        <div class="note">
+          <strong>권한 확인</strong>
+          <p>수정/삭제는 작성자 권한 확인을 포함하며, 공지사항 관리는 관리자 권한 확인을 포함합니다.</p>
+        </div>
+        <div class="note">
+          <strong>제외 범위</strong>
+          <p>F06 관광지 관련 뉴스 크롤링은 이번 WBS 범위에서 제외했으므로 Use Case Diagram에서도 제외했습니다.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
